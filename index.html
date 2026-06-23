@@ -9961,6 +9961,66 @@
         background: rgba(255, 255, 255, 0.03);
       }
 
+      /* standup quick-prompt chips — optional one-tap helpers, on the violet accent */
+      .qp-chip {
+        font-family: inherit;
+        font-size: 11px;
+        font-weight: 500;
+        color: var(--sarah);
+        background: rgba(179, 164, 255, 0.08);
+        border: 1px solid rgba(179, 164, 255, 0.18);
+        border-radius: 999px;
+        padding: 5px 11px;
+        cursor: pointer;
+        white-space: nowrap;
+        transition:
+          background 0.14s,
+          border-color 0.14s,
+          transform 0.12s;
+      }
+      .qp-chip:hover {
+        background: rgba(179, 164, 255, 0.15);
+        border-color: rgba(179, 164, 255, 0.34);
+        transform: translateY(-1px);
+      }
+      .qp-chip:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+        transform: none;
+      }
+      /* turn-sensitivity segmented control — subtle by design */
+      .sens {
+        display: inline-flex;
+        gap: 1px;
+        padding: 2px;
+        border-radius: 7px;
+        background: var(--r);
+        border: 1px solid var(--bo);
+      }
+      .sens-opt {
+        font-family: inherit;
+        font-size: 9.5px;
+        font-weight: 600;
+        letter-spacing: 0.03em;
+        text-transform: capitalize;
+        color: var(--td);
+        background: transparent;
+        border: none;
+        border-radius: 5px;
+        padding: 3px 8px;
+        cursor: pointer;
+        transition:
+          background 0.14s,
+          color 0.14s;
+      }
+      .sens-opt:hover {
+        color: var(--ts);
+      }
+      .sens-opt.on {
+        color: var(--sarah);
+        background: rgba(179, 164, 255, 0.12);
+      }
+
       .b-cy {
         background: var(--cyd);
         color: var(--cy);
@@ -10943,6 +11003,14 @@
           text: "Clean. Good standup, team. Pick up T-04 when you're ready — Priya will ping you when the model's merged.",
         },
       ];
+      // Optional one-tap helpers, mirrored from the runtime `ui.quickPrompts`.
+      // They never replace the free-text reply — just lower the cost of a first word.
+      const STANDUP_QUICK_PROMPTS = [
+        "I’m still understanding the task",
+        "I found the likely issue",
+        "I’m blocked",
+        "I’m ready to implement",
+      ];
       let _stTurn = 0;
       const Fixtures = {
         login: (email) => {
@@ -11513,7 +11581,12 @@
               canReply: true,
               canWrap: false,
               nextActionLabel: "Reply to Sarah",
-              quickPrompts: [],
+              quickPrompts: STANDUP_QUICK_PROMPTS,
+            },
+            context: {
+              purpose: "comprehension",
+              label: "Comprehension check",
+              note: "She's read your latest checks and the auth guard you wrote.",
             },
             messages: [{ actor: "sarah", content: STANDUP_SCRIPT[0].text }],
           });
@@ -11542,6 +11615,8 @@
                     canReply: !done,
                     canWrap: done,
                     nextActionLabel: done ? "Wrap up" : "Reply to Sarah",
+                    wrapCtaLabel: "Continue to workspace",
+                    quickPrompts: done ? [] : STANDUP_QUICK_PROMPTS,
                   },
                   scoring: {
                     comprehension: _stTurn >= 2 ? "strong" : "tracking",
@@ -14642,8 +14717,9 @@
    interruption), then a voice-first full-room takeover with a
    live transcript. Text is the calm fallback.
    ════════════════════════════════════════════════════════════ */
-      function StandupIncoming({ onJoinVoice, onJoinText, onDelay }) {
+      function StandupIncoming({ onJoinVoice, onJoinText, onDelay, context }) {
         const [n, setN] = useState(8);
+        const [delayed, setDelayed] = useState(false);
         useEffect(() => {
           const t = setInterval(
             () =>
@@ -14667,7 +14743,7 @@
               position: "fixed",
               inset: 0,
               zIndex: 75,
-              background: "rgba(7,7,13,.6)",
+              background: "rgba(12,11,9,.62)",
               backdropFilter: "blur(10px)",
               display: "flex",
               alignItems: "center",
@@ -14680,13 +14756,39 @@
             {
               className: "card",
               style: {
-                width: 380,
+                width: 392,
                 padding: 28,
                 textAlign: "center",
+                position: "relative",
+                overflow: "hidden",
+                border: "1px solid rgba(179,164,255,.22)",
                 animation: "scale-in .4s cubic-bezier(.16,1,.3,1) both",
-                boxShadow: "0 24px 80px rgba(0,0,0,.55)",
+                boxShadow:
+                  "0 24px 80px rgba(0,0,0,.55), 0 0 60px rgba(179,164,255,.10)",
               },
             },
+            // a soft violet wash from the top — the standup's own accent,
+            // marking this as the one interruption the product allows.
+            h("div", {
+              style: {
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                height: 120,
+                background:
+                  "radial-gradient(120% 100% at 50% 0%, rgba(179,164,255,.16), transparent 70%)",
+                pointerEvents: "none",
+              },
+            }),
+            h(
+              "div",
+              {
+                className: "sl",
+                style: { color: "var(--sarah)", marginBottom: 14 },
+              },
+              "Standup · the floor is hers",
+            ),
             h(
               "div",
               {
@@ -14744,9 +14846,37 @@
             ),
             h(
               "div",
-              { style: { fontSize: 16, fontWeight: 600, color: "var(--t)" } },
+              { style: { fontSize: 16.5, fontWeight: 600, color: "var(--t)" } },
               "Sarah is calling a standup",
             ),
+            h(
+              "div",
+              {
+                style: {
+                  fontSize: 11,
+                  color: "var(--td)",
+                  marginTop: 3,
+                },
+              },
+              "Sarah Chen \u00b7 Engineering Lead \u00b7 Daily Standup",
+            ),
+            context?.note &&
+              h(
+                "div",
+                {
+                  style: {
+                    fontSize: 11.5,
+                    color: "var(--sarah)",
+                    background: "rgba(179,164,255,.08)",
+                    border: "1px solid rgba(179,164,255,.16)",
+                    borderRadius: 7,
+                    padding: "7px 11px",
+                    lineHeight: 1.5,
+                    margin: "13px 4px 0",
+                  },
+                },
+                (context.label ? context.label + " \u2014 " : "") + context.note,
+              ),
             h(
               "p",
               {
@@ -14754,7 +14884,7 @@
                   fontSize: 12.5,
                   color: "var(--tm)",
                   lineHeight: 1.6,
-                  margin: "8px 0 4px",
+                  margin: "11px 0 4px",
                 },
               },
               "Take a breath. She\u2019ll ask you to walk through your work. Joining by voice in ",
@@ -14803,18 +14933,33 @@
                   "button",
                   {
                     className: "btn btn-ghost btn-sm",
-                    onClick: onDelay,
+                    onClick: () => {
+                      setDelayed(true);
+                      onDelay();
+                    },
+                    disabled: delayed,
                     style: { flex: 1 },
                   },
-                  "Delay once",
+                  context?.delayLabel || "Need 30s",
                 ),
+              ),
+              h(
+                "div",
+                {
+                  style: {
+                    fontSize: 10,
+                    color: "var(--tf)",
+                    marginTop: 9,
+                  },
+                },
+                "A delay, not a dismissal — she’ll pull you in after.",
               ),
             ),
           ),
         );
       }
 
-      function StandupRoom({ sessionId, mode, onComplete }) {
+      function StandupRoom({ sessionId, mode, onComplete, context: ctxProp }) {
         const [standup, setStandup] = useState(null);
         const [transcript, setTranscript] = useState([]); // {actor,content}
         const [ui, setUi] = useState({ canReply: false, canWrap: false });
@@ -14822,11 +14967,16 @@
         const [active, setActive] = useState("sarah");
         const [busy, setBusy] = useState(false);
         const [voice, setVoice] = useState(mode === "voice");
+        const [ctx, setCtx] = useState(ctxProp || null);
+        // Sarah's pause-tolerance. Defaulted to balanced; exposed subtly,
+        // mirroring the backend `turnSensitivity` knob.
+        const [sensitivity, setSensitivity] = useState("balanced");
         const tRef = useRef(null);
         useEffect(() => {
           (async () => {
             const j = await api.joinStandup(sessionId);
             setStandup(j.standup);
+            if (j.context) setCtx(j.context);
             setUi(j.ui || { canReply: true });
             setTranscript(
               (j.messages || []).map((m) => ({
@@ -14887,7 +15037,7 @@
               position: "fixed",
               inset: 0,
               zIndex: 74,
-              background: "rgba(6,16,18,.64)",
+              background: "rgba(12,11,9,.66)",
               backdropFilter: "blur(6px)",
               display: "flex",
               flexDirection: "column",
@@ -14943,6 +15093,15 @@
                   "Sarah Chen \u00b7 Engineering Lead",
                 ),
               ),
+              ctx?.label &&
+                h(
+                  "div",
+                  {
+                    className: "tag b-vi",
+                    style: { marginLeft: 4 },
+                  },
+                  ctx.label,
+                ),
               h("div", { style: { flex: 1 } }),
               h(
                 "button",
@@ -15049,17 +15208,61 @@
                       borderTop: "1px solid var(--bo)",
                     },
                   },
+                  !ui.canWrap &&
+                    ui.canReply &&
+                    (ui.quickPrompts || []).length > 0 &&
+                    h(
+                      "div",
+                      {
+                        style: {
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 6,
+                          flexWrap: "wrap",
+                          marginBottom: 10,
+                        },
+                      },
+                      (ui.quickPrompts || []).map((q, i) =>
+                        h(
+                          "button",
+                          {
+                            key: i,
+                            onClick: () => setReply(q),
+                            disabled: busy,
+                            className: "qp-chip",
+                          },
+                          q,
+                        ),
+                      ),
+                      h("div", { style: { flex: 1, minWidth: 8 } }),
+                      h(
+                        "div",
+                        { className: "sens", title: "How long Sarah waits on a pause" },
+                        ["fast", "balanced", "patient"].map((s) =>
+                          h(
+                            "button",
+                            {
+                              key: s,
+                              onClick: () => setSensitivity(s),
+                              className:
+                                "sens-opt" + (sensitivity === s ? " on" : ""),
+                            },
+                            s,
+                          ),
+                        ),
+                      ),
+                    ),
                   ui.canWrap
                     ? h(
                         "button",
                         {
-                          className: "btn btn-pri",
+                          className: "btn btn-violet",
                           onClick: wrap,
                           style: { width: "100%" },
                         },
                         [
                           h(I.check, { key: 1, size: 14 }),
-                          "Wrap up \u2014 generate my report",
+                          ui.wrapCtaLabel || "Continue to workspace",
                         ],
                       )
                     : voice
@@ -15082,9 +15285,9 @@
                                 width: 48,
                                 height: 48,
                                 borderRadius: "50%",
-                                background: "var(--cyd)",
-                                border: "1px solid rgba(242,169,59,.3)",
-                                color: "var(--cy)",
+                                background: "rgba(179,164,255,.14)",
+                                border: "1px solid rgba(179,164,255,.32)",
+                                color: "var(--sarah)",
                               },
                             },
                             h(I.mic, { size: 18 }),
@@ -16477,6 +16680,13 @@
             }),
           standup === "incoming" &&
             h(StandupIncoming, {
+              context: {
+                label: "Comprehension check",
+                delayLabel: "Need 30s",
+                note: ticket
+                  ? `She’ll ask about ${ticket.ticketId || "your current ticket"} — ${ticket.title || "the work you just did"}.`
+                  : "She’s read your latest checks and the work you just pushed.",
+              },
               onJoinVoice: () => setStandup("voice"),
               onJoinText: () => setStandup("text"),
               onDelay: () => {
@@ -16495,6 +16705,12 @@
             h(StandupRoom, {
               sessionId: sid,
               mode: standup,
+              context: {
+                label: "Comprehension check",
+                note: ticket
+                  ? `On ${ticket.ticketId || "your ticket"} · ${ticket.title || ""}`
+                  : null,
+              },
               onComplete: () => {
                 setStandup(null);
                 onReport(sid);
