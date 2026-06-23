@@ -12137,7 +12137,7 @@
               style: {
                 display: "flex", alignItems: "center", height: 56, padding: "0 28px",
                 borderBottom: "1px solid var(--bo)", position: "sticky", top: 0,
-                background: "rgba(7,7,13,.85)", backdropFilter: "blur(12px)", zIndex: 10,
+                background: "rgba(12,11,9,.85)", backdropFilter: "blur(12px)", zIndex: 10,
               },
             },
             h(Wordmark, { size: 14 }),
@@ -13566,14 +13566,35 @@
             { style: { padding: 16, color: "var(--tf)", fontSize: 12 } },
             "No board data.",
           );
-        const col = (title, items, tint) =>
+        const col = (title, items, tint, accent) =>
           h(
             "div",
             { style: { marginBottom: 16 } },
             h(
               "div",
-              { className: "sl", style: { marginBottom: 8, color: tint } },
+              {
+                className: "sl",
+                style: {
+                  marginBottom: 8,
+                  color: tint,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
+                },
+              },
               title,
+              (items || []).length > 0 &&
+                h(
+                  "span",
+                  {
+                    style: {
+                      color: "var(--tg)",
+                      fontWeight: 600,
+                      letterSpacing: 0,
+                    },
+                  },
+                  (items || []).length,
+                ),
             ),
             h(
               "div",
@@ -13586,8 +13607,20 @@
                     style: {
                       padding: 10,
                       borderRadius: 9,
-                      background: "var(--r)",
-                      border: "1px solid var(--bo)",
+                      // The active ticket is the one thing that should pull the
+                      // eye in the workspace — give it the amber accent + glow.
+                      background: accent
+                        ? "linear-gradient(180deg, rgba(242,169,59,.06), var(--r))"
+                        : "var(--r)",
+                      border: accent
+                        ? "1px solid rgba(242,169,59,.32)"
+                        : "1px solid var(--bo)",
+                      borderLeft: accent
+                        ? "2px solid var(--cy)"
+                        : "1px solid var(--bo)",
+                      boxShadow: accent
+                        ? "0 0 0 1px rgba(242,169,59,.04), 0 6px 18px rgba(242,169,59,.06)"
+                        : "none",
                       opacity: title === "Done" ? 0.62 : 1,
                     },
                   },
@@ -13644,7 +13677,7 @@
         return h(
           "div",
           { style: { flex: 1, overflowY: "auto", padding: 12 } },
-          col("In Progress", board.inProgress, "var(--cy)"),
+          col("In Progress", board.inProgress, "var(--cy)", true),
           col("To Do", board.todo, "var(--td)"),
           col("Done", board.done, "var(--ok)"),
         );
@@ -14685,7 +14718,7 @@
               position: "fixed",
               inset: 0,
               zIndex: 70,
-              background: "rgba(7,7,13,.78)",
+              background: "rgba(12,11,9,.78)",
               backdropFilter: "blur(8px)",
               display: "flex",
               alignItems: "center",
@@ -16617,7 +16650,8 @@
                 h(Support, { sessionId: sid, onTeammatePair: setDock }),
             ),
           ),
-          // ── status bar ──
+          // ── status bar — calm dark surface; amber is reserved for accents,
+          // so connection shows as a small amber pulse, not a full band ──
           h(
             "div",
             {
@@ -16626,24 +16660,44 @@
                 alignItems: "center",
                 height: 22,
                 padding: "0 12px",
-                background: "var(--cy)",
+                background: "var(--s)",
+                borderTop: "1px solid var(--bo)",
                 flexShrink: 0,
                 gap: 14,
               },
             },
             h(
               "span",
-              { style: { fontSize: 9, fontWeight: 600, color: "#1f1605" } },
+              {
+                style: {
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 6,
+                  fontSize: 9,
+                  fontWeight: 600,
+                  color: "var(--tm)",
+                },
+              },
+              h("span", {
+                style: {
+                  width: 5,
+                  height: 5,
+                  borderRadius: "50%",
+                  background: "var(--cy)",
+                  animation: "pulse-ring 2.4s infinite",
+                  "--ring": "rgba(242,169,59,.45)",
+                },
+              }),
               connectionLabel,
             ),
             h(
               "span",
-              { style: { fontSize: 9, color: "rgba(6,18,26,.6)" } },
+              { className: "mono", style: { fontSize: 9, color: "var(--tf)" } },
               sid,
             ),
             h(
               "span",
-              { style: { fontSize: 9, color: "rgba(6,18,26,.65)" } },
+              { style: { fontSize: 9, color: "var(--tf)" } },
               layoutPriority,
             ),
             h("div", { style: { flex: 1 } }),
@@ -16652,13 +16706,13 @@
                 "span",
                 {
                   className: "mono",
-                  style: { fontSize: 9, color: "rgba(6,18,26,.7)" },
+                  style: { fontSize: 9, color: "var(--td)" },
                 },
                 active.split("/").pop(),
               ),
             h(
               "span",
-              { style: { fontSize: 9, color: "rgba(6,18,26,.7)" } },
+              { style: { fontSize: 9, color: "var(--td)" } },
               "TypeScript",
             ),
           ),
@@ -16986,7 +17040,7 @@
               position: "fixed",
               inset: 0,
               zIndex: 200,
-              background: "rgba(7,7,13,.86)",
+              background: "rgba(12,11,9,.86)",
               backdropFilter: "blur(10px)",
               display: "flex",
               flexDirection: "column",
