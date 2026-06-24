@@ -703,6 +703,25 @@
       .scn .scn-r { width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--line-3); flex-shrink: 0; }
       .scn.on { border-color: var(--blue); background: var(--blue-tint); }
       .scn.on .scn-r { border-color: var(--blue); background: radial-gradient(circle, var(--blue) 38%, transparent 42%); }
+      /* review surface (James) */
+      .review-modal { width: min(620px, 100%); max-height: 86vh; background: var(--panel); border: 1px solid var(--line-2); border-top: 3px solid var(--james); border-radius: 16px; box-shadow: var(--sh-pop); display: flex; flex-direction: column; overflow: hidden; animation: rise .42s cubic-bezier(.16,1,.3,1) both; }
+      .rv-head { display: flex; align-items: center; gap: 11px; padding: 16px 18px; border-bottom: 1px solid var(--line); }
+      .rv-head .chip { flex-shrink: 0; }
+      .rv-body { overflow-y: auto; padding: 18px; }
+      .rv-narr { font-size: 16.5px; line-height: 1.55; color: var(--ink); margin-bottom: 18px; }
+      .rv-clab { display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+      .rv-clab span { color: var(--faint); }
+      .rvc { border: 1px solid var(--line); border-radius: 11px; padding: 12px 13px; margin-bottom: 10px; background: var(--panel-2); }
+      .rvc-h { display: flex; align-items: center; gap: 9px; margin-bottom: 9px; }
+      .rvc-sev { font-size: 10px; font-weight: 600; letter-spacing: 0.03em; text-transform: uppercase; padding: 2px 8px; border-radius: 6px; }
+      .rvc-loc { font-size: 11px; color: var(--muted); }
+      .rvc-code { font-size: 11.5px; color: var(--ink-2); background: var(--panel); border: 1px solid var(--line); border-left: 2px solid var(--james); border-radius: 7px; padding: 7px 10px; overflow-x: auto; white-space: pre; }
+      .rvc-note { font-size: 12.5px; color: var(--ink-2); line-height: 1.5; margin-top: 9px; }
+      .rvc-note code { font-family: var(--mono); font-size: 11px; background: var(--well); padding: 1px 5px; border-radius: 4px; color: var(--ink); }
+      .rv-score { display: flex; align-items: center; gap: 10px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--muted); }
+      .rv-score b { font-size: 18px; font-weight: 600; color: var(--ink-2); }
+      .rv-score-s { font-size: 11px; color: var(--faint); }
+      .rv-foot { display: flex; justify-content: flex-end; gap: 10px; padding: 14px 18px; border-top: 1px solid var(--line); background: var(--panel-2); }
       @media (max-width: 860px) { .dimgrid { grid-template-columns: 1fr; } .rep2 { grid-template-columns: 1fr; } .report-hero { flex-direction: column; align-items: flex-start; gap: 18px; } }
       /* scorecard view toggle */
       .rep-toggle { display: inline-flex; gap: 2px; padding: 3px; background: var(--well); border: 1px solid var(--line); border-radius: 10px; }
@@ -880,6 +899,16 @@
         { who: "sarah", t: "Clean. Good standup. Pick up T-04 when you're ready — Priya will ping you when the model's merged." },
       ];
       const QUICK_PROMPTS = ["I'm still understanding the task", "I found the likely issue", "I'm blocked", "I'm ready to implement"];
+      // James's per-ticket review (review/request -> REVIEW_COMPLETED: summary + comments + score).
+      const REVIEW = {
+        ticket: "T-03", score: 92, verdict: "Approve with nits",
+        narrative: "Clean separation — the guard is reusable and the expired branch is handled distinctly. I'd merge this. Two small notes below; neither blocks.",
+        comments: [
+          { sev: "praise", file: "auth.guard.ts", line: 12, code: "if (!header || !header.startsWith('Bearer '))", note: "Short-circuiting before any verify work — clean." },
+          { sev: "nit", file: "auth.guard.ts", line: 17, code: "const payload = jwt.verify(token, process.env.JWT_SECRET!)", note: "Name this `claims` — reads better at the call sites and matches our other guards." },
+          { sev: "suggestion", file: "auth.guard.ts", line: 21, code: "// TODO: branch TokenExpiredError", note: "You did branch it — drop the stale TODO so the next reader isn't misled." },
+        ],
+      };
       const REPORT = {
         // finalScore = sum of weighted dimension scores (backend rule).
         // 90*.3 + 86*.25 + 88*.2 + 84*.15 + 92*.1 = 87.9 -> 88
@@ -2123,15 +2152,42 @@
 
       function requestReview() {
         S.reportReady = false;
-        // James reviews -> show narrative toast, then enable report after standup
+        // REVIEW_STARTED: James reviews (only appears at review). The board shows
+        // 'In review with James', then REVIEW_COMPLETED surfaces his narrative.
         const rb = document.getElementById("review-btn");
         if (rb) { rb.disabled = true; rb.innerHTML = `<span class="spinner" style="border-color:var(--line-3);border-top-color:var(--ink-2)"></span> James is reviewing…`; }
         const t = document.getElementById("toasts");
-        if (t) t.innerHTML = `<div class="toast" style="border-left-color:var(--james)"><div class="th">${av("james", 22)}<span class="nm">James · Reviewer</span><span class="tier">Active</span></div><p><b>“Clean separation — I'd merge this.”</b> Two minor naming notes inline. Nice work on the expired branch.</p><div class="ta"><button class="btn btn-ghost btn-sm" data-toast="x">View review</button></div></div>`;
+        if (t) t.innerHTML = `<div class="toast" style="border-left-color:var(--james)"><div class="th">${av("james", 22)}<span class="nm">James · Reviewer</span><span class="tier">Active</span></div><p>Reviewing your auth guard on ${REVIEW.ticket}…</p></div>`;
         setTimeout(() => {
-          if (rb) { rb.innerHTML = `${svg(icon.check, 15, 2)} Reviewed ✓`; }
-          openStandupIncoming();
-        }, 2200);
+          if (t) t.innerHTML = "";
+          if (rb) { rb.innerHTML = `${svg(icon.check, 15, 2)} Reviewed`; }
+          openReview();
+        }, 1900);
+      }
+      function openReview() {
+        if (document.getElementById("modal-layer")) return;
+        const sevC = { praise: { t: "Praise", c: "var(--ok)", bg: "var(--ok-tint)" }, nit: { t: "Nit", c: "var(--muted)", bg: "var(--well)" }, suggestion: { t: "Suggestion", c: "var(--blue-d)", bg: "var(--blue-tint)" } };
+        const cmt = (c) => `<div class="rvc"><div class="rvc-h"><span class="rvc-sev" style="background:${sevC[c.sev].bg};color:${sevC[c.sev].c}">${sevC[c.sev].t}</span><span class="rvc-loc mono">${c.file}:${c.line}</span></div><div class="rvc-code mono">${esc(c.code)}</div><div class="rvc-note">${c.note.replace(/`([^`]+)`/g, '<code>$1</code>')}</div></div>`;
+        const layer = document.createElement("div");
+        layer.className = "modal-layer"; layer.id = "modal-layer";
+        layer.innerHTML = `<div class="review-modal">
+          <div class="rv-head">${av("james", 36)}
+            <div style="flex:1;min-width:0"><div style="font-weight:600;font-size:14px">James Okonkwo · Reviewer</div><div style="font-size:11.5px;color:var(--muted)">Reviewed ${REVIEW.ticket} · JWT auth middleware</div></div>
+            <span class="chip" style="background:var(--ok-tint);color:var(--ok)">${svg(icon.check, 12, 2.6)} ${REVIEW.verdict}</span>
+            <button class="modal-x" data-modal-close>${svg('<path d="M6 6l12 12M18 6 6 18"/>', 16, 2)}</button>
+          </div>
+          <div class="rv-body">
+            <p class="rv-narr serif">${REVIEW.narrative}</p>
+            <div class="rv-clab">Inline comments <span>${REVIEW.comments.length}</span></div>
+            ${REVIEW.comments.map(cmt).join("")}
+            <div class="rv-score"><span>Code review score</span><b class="tnum">${REVIEW.score}</b><span class="rv-score-s">shown quiet — the narrative is the point</span></div>
+          </div>
+          <div class="rv-foot"><button class="btn btn-ghost" data-modal-close>Back to code</button><button class="btn btn-pri" id="rv-continue">Continue ${svg(icon.arrow, 15, 2.1)}</button></div>
+        </div>`;
+        layer.addEventListener("click", (ev) => { if (ev.target === layer) layer.remove(); });
+        document.getElementById("root").appendChild(layer);
+        const cont = document.getElementById("rv-continue");
+        if (cont) cont.addEventListener("click", () => { layer.remove(); openStandupIncoming(); });
       }
 
       function openStandupIncoming() {
