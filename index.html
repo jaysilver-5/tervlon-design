@@ -711,6 +711,47 @@
       .empty .ei svg { width: 26px; height: 26px; stroke-width: 1.8; }
 
       @media (max-width: 1100px) { .ws-main { grid-template-columns: 264px 1fr 300px; } }
+
+      /* rail sign-out */
+      .rail-out { display: grid; place-items: center; padding: 5px; border-radius: 7px; flex-shrink: 0; }
+      .rail-out:hover { background: var(--well); }
+      /* auth */
+      .auth { display: grid; grid-template-columns: 1.05fr 1fr; height: 100vh; }
+      .auth-brand { position: relative; padding: 44px; display: flex; flex-direction: column; color: #eaf5fd; background: var(--grad); overflow: hidden; }
+      .auth-brand::before { content: ""; position: absolute; inset: 0; background: radial-gradient(70% 50% at 80% -10%, rgba(255,255,255,.28), transparent 60%), linear-gradient(180deg, transparent 50%, rgba(7,42,78,.34)); }
+      .auth-brand > * { position: relative; }
+      .auth-logo { display: flex; align-items: center; gap: 10px; }
+      .auth-pitch { margin-top: auto; margin-bottom: auto; }
+      .auth-pitch h2 { font-size: 34px; line-height: 1.18; font-weight: 400; letter-spacing: -0.01em; }
+      .auth-pitch p { margin-top: 16px; font-size: 14.5px; line-height: 1.6; color: rgba(234,245,253,.86); max-width: 42ch; }
+      .auth-b { display: flex; align-items: center; gap: 10px; font-size: 13.5px; margin-top: 11px; color: rgba(255,255,255,.94); }
+      .auth-b svg { background: rgba(255,255,255,.18); border-radius: 50%; padding: 3px; width: 20px; height: 20px; flex-shrink: 0; }
+      .auth-foot { font-size: 12px; color: rgba(234,245,253,.7); }
+      .auth-pane { display: grid; place-items: center; padding: 32px; background: var(--bg); }
+      .auth-card { width: min(380px, 100%); }
+      .auth-tabs { display: flex; gap: 2px; padding: 3px; background: var(--well); border: 1px solid var(--line); border-radius: 11px; margin-bottom: 20px; }
+      .at { flex: 1; font-size: 13px; font-weight: 500; padding: 8px; border-radius: 8px; border: none; background: transparent; color: var(--ink-2); }
+      .at.on { background: var(--panel); color: var(--ink); font-weight: 560; box-shadow: var(--sh-1); }
+      .auth-role { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-bottom: 18px; }
+      .role-opt { display: flex; align-items: center; gap: 9px; padding: 11px; border: 1px solid var(--line-2); border-radius: 11px; cursor: pointer; color: var(--ink-2); transition: border-color .14s, background .14s; }
+      .role-opt:hover { border-color: var(--line-3); }
+      .role-opt.on { border-color: var(--blue); background: var(--blue-tint); color: var(--blue-d); }
+      .role-opt svg { flex-shrink: 0; }
+      .ro-t { font-size: 12.5px; font-weight: 560; }
+      .ro-s { font-size: 10.5px; color: var(--muted); }
+      .auth-or { display: flex; align-items: center; gap: 12px; margin: 16px 0; color: var(--faint); font-size: 11.5px; }
+      .auth-or::before, .auth-or::after { content: ""; height: 1px; flex: 1; background: var(--line); }
+      .auth-note { font-size: 11px; color: var(--faint); line-height: 1.5; margin-top: 16px; }
+      /* invite landing */
+      .invite-land { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; background: radial-gradient(120% 70% at 50% -10%, var(--blue-tint), var(--bg) 60%); }
+      .il-top { position: absolute; top: 28px; left: 32px; display: flex; align-items: center; gap: 9px; }
+      .il-card { width: min(520px, 100%); background: var(--panel); border: 1px solid var(--line-2); border-radius: 20px; box-shadow: var(--sh-pop); padding: 30px; }
+      .il-from { display: inline-flex; align-items: center; gap: 8px; font-size: 12.5px; font-weight: 540; color: var(--ink-2); background: var(--panel-2); border: 1px solid var(--line); border-radius: 99px; padding: 5px 12px 5px 6px; }
+      .il-meta { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+      .ilm { background: var(--panel); padding: 12px 14px; }
+      .ilm .k { font-size: 10.5px; color: var(--muted); }
+      .ilm .v { font-size: 14px; font-weight: 600; margin-top: 2px; }
+      @media (max-width: 760px) { .auth { grid-template-columns: 1fr; } .auth-brand { display: none; } }
     </style>
   </head>
   <body>
@@ -881,9 +922,10 @@
           ${item("reviewboard", "users", "Review board", String(COMPANY.stats.needsReview))}
           ${item("assessments", "grid", "Assessments")}
           ${item("catalog", "book", "Scenario catalog")}`;
+        const signout = `<span class="rail-out" data-route="auth" title="Sign out">${svg('<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>', 15, 1.9).replace("currentColor", "var(--faint)")}</span>`;
         const foot = co
-          ? `<div class="rail-foot" title="Company account"><span class="av" style="background:var(--marcus);width:30px;height:30px;font-size:11px">NW</span><div style="min-width:0;line-height:1.35;flex:1"><div style="font-weight:560;font-size:13px">Northwind</div><div style="font-size:11px;color:var(--muted)">Company · admin</div></div></div>`
-          : `<div class="rail-foot" data-route="profile" title="Your profile — the credential">${av("you", 30)}<div style="min-width:0;line-height:1.35;flex:1"><div style="font-weight:560;font-size:13px">Joshua O.</div><div style="font-size:11px;color:var(--muted)">Developer · Tier 1</div></div>${svg('<path d="m9 6 6 6-6 6"/>', 14, 2).replace("currentColor", "var(--faint)")}</div>`;
+          ? `<div class="rail-foot" title="Company account"><span class="av" style="background:var(--marcus);width:30px;height:30px;font-size:11px">NW</span><div style="min-width:0;line-height:1.35;flex:1"><div style="font-weight:560;font-size:13px">Northwind</div><div style="font-size:11px;color:var(--muted)">Company · admin</div></div>${signout}</div>`
+          : `<div class="rail-foot" data-route="profile" title="Your profile — the credential">${av("you", 30)}<div style="min-width:0;line-height:1.35;flex:1"><div style="font-weight:560;font-size:13px">Joshua O.</div><div style="font-size:11px;color:var(--muted)">Developer · Tier 1</div></div>${signout}</div>`;
         return `<aside class="rail">
           <div class="brand" data-route="${co ? "company" : "home"}"><span class="brand-mark">${LOGO}</span><span class="brand-name">Tervlon</span></div>
           ${persona}
@@ -1573,8 +1615,57 @@
         </section>`);
       }
 
+      /* ════════════════ AUTH + INVITE (front door) ════════════════ */
+      function viewAuth() {
+        const bullet = (t) => `<div class="auth-b">${svg(icon.check, 14, 2.6).replace("currentColor", "#fff")}<span>${t}</span></div>`;
+        return `<div class="auth fade">
+          <div class="auth-brand">
+            <div class="auth-logo"><span style="width:30px;height:30px;display:block">${LOGO}</span><span style="font-size:19px;font-weight:600;letter-spacing:-.03em;color:#fff">Tervlon</span></div>
+            <div class="auth-pitch">
+              <h2 class="serif">A day on a good team,<br/>observed — not a quiz.</h2>
+              <p>Join a software team mid-sprint, write real code in a real sandbox, get pulled into a standup, and walk away with an evidence-backed scorecard.</p>
+              <div style="margin-top:24px">${bullet("Real tickets, hidden-test graded")}${bullet("An AI lead who probes your understanding")}${bullet("A verified credential, not a take-home")}</div>
+            </div>
+            <div class="auth-foot">Trusted signal for developers, companies & institutions.</div>
+          </div>
+          <div class="auth-pane">
+            <div class="auth-card">
+              <div class="auth-tabs"><button class="at on" data-auth-tab="in">Sign in</button><button class="at" data-auth-tab="up">Create account</button></div>
+              <div class="auth-role"><div class="role-opt on" data-auth-role="developer">${svg('<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>', 16, 1.9)}<div><div class="ro-t">Developer</div><div class="ro-s">Practice & get verified</div></div></div>
+                <div class="role-opt" data-auth-role="company">${svg('<path d="M3 21V8l6-4 6 4v13M9 21v-5h3v5M15 11h3v6"/>', 16, 1.9)}<div><div class="ro-t">Company</div><div class="ro-s">Assess candidates</div></div></div></div>
+              <label class="fld-l">Work email</label><input class="fld" placeholder="you@email.com" value=""/>
+              <label class="fld-l" style="margin-top:13px">Password</label><input class="fld" type="password" placeholder="••••••••"/>
+              <button class="btn btn-pri" data-auth-go style="width:100%;margin-top:18px;padding:11px">Continue ${svg(icon.arrow, 15, 2.1)}</button>
+              <div class="auth-or"><span>or</span></div>
+              <button class="btn btn-ghost" data-auth-go style="width:100%">${svg('<path d="M21 12.2c0-.7-.1-1.4-.2-2H12v3.8h5.1a4.4 4.4 0 0 1-1.9 2.9v2.4h3.1c1.8-1.7 2.7-4.1 2.7-7.1z"/><path d="M12 22c2.6 0 4.8-.9 6.3-2.4l-3.1-2.4c-.9.6-2 .9-3.2.9-2.5 0-4.6-1.7-5.3-3.9H3.5v2.5A9.5 9.5 0 0 0 12 22z"/>', 16, 0).replace('fill="none"', 'fill="var(--muted)"')} Continue with Google</button>
+              <div class="auth-note">By continuing you agree to the terms. JWT access + refresh; this is a design preview — no real auth.</div>
+            </div>
+          </div>
+        </div>`;
+      }
+      function viewInvite() {
+        const s = SPRINTS[0];
+        return `<div class="invite-land fade">
+          <div class="il-top"><span style="width:26px;height:26px;display:block">${LOGO}</span><span style="font-size:16px;font-weight:600;letter-spacing:-.03em">Tervlon</span></div>
+          <div class="il-card">
+            <div class="il-from"><span class="av" style="background:var(--marcus);width:30px;height:30px;font-size:11px">NW</span> Northwind invited you to an assessment</div>
+            <h1 class="display" style="font-size:25px;margin:14px 0 6px">${s.title}</h1>
+            <p class="lead" style="margin-bottom:18px">You'll join a software team that's already mid-sprint, pick up real tickets, and get pulled into a standup with the engineering lead. It's a real day of work — not a quiz.</p>
+            <div class="il-meta">
+              <div class="ilm"><div class="k">Track</div><div class="v">${s.track}</div></div>
+              <div class="ilm"><div class="k">Level</div><div class="v">${s.level === 1 ? "Junior" : "Mid"}</div></div>
+              <div class="ilm"><div class="k">Tickets</div><div class="v">${s.tickets}</div></div>
+              <div class="ilm"><div class="k">Time</div><div class="v">~${s.mins}m</div></div>
+            </div>
+            <button class="btn btn-pri" data-route="workspace" style="width:100%;margin-top:20px;padding:12px">Accept & start the sprint ${svg(icon.arrow, 15, 2.1)}</button>
+            <div class="auth-note" style="text-align:center">Accepting mints your attempt and drops you straight into the runtime — no long signup.</div>
+          </div>
+          <div style="font-size:12px;color:var(--faint);margin-top:18px">Your work is observed to produce a fair, evidence-backed report. <a data-route="auth" style="color:var(--blue-d)">Have an account?</a></div>
+        </div>`;
+      }
+
       /* ════════════════ ROUTER ════════════════ */
-      const VIEWS = { home: viewHome, catalog: viewCatalog, workspace: viewWorkspace, scorecard: viewScorecard, profile: viewProfile, company: viewCompany, reviewboard: viewReviewboard, assessments: viewAssessments };
+      const VIEWS = { home: viewHome, catalog: viewCatalog, workspace: viewWorkspace, scorecard: viewScorecard, profile: viewProfile, company: viewCompany, reviewboard: viewReviewboard, assessments: viewAssessments, auth: viewAuth, invite: viewInvite };
       function render() {
         const root = document.getElementById("root");
         root.innerHTML = (VIEWS[S.route] || viewHome)();
@@ -1632,6 +1723,7 @@
               <input class="fld" placeholder="candidate@email.com" value=""/>
               <div class="invite-url"><span class="mono" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${url}</span><button class="btn btn-ghost btn-sm" id="copy-invite">${svg(icon.copy, 13, 2)} Copy</button></div>
               <div class="modal-note">${svg('<circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/>', 14, 1.9).replace("currentColor", "var(--blue-d)")} The link is shown once. The candidate accepts it, which mints an attempt and drops them into the same runtime — no account hoops.</div>
+              <div style="text-align:center;margin-top:12px"><a class="link" data-route="invite" style="font-size:12.5px;cursor:pointer">Preview the candidate's invite page →</a></div>
             </div>
             <div class="modal-f"><button class="btn btn-ghost" data-modal-close>Done</button><button class="btn btn-pri" data-modal-close>${svg(icon.send, 14, 2)} Send invite</button></div>
           </div>`;
@@ -1736,6 +1828,15 @@
         if (tab) { catTrack = tab.getAttribute("data-track"); render(); return; }
         const scn = e.target.closest(".scn");
         if (scn) { scn.parentElement.querySelectorAll(".scn").forEach((x) => x.classList.remove("on")); scn.classList.add("on"); return; }
+        const ro = e.target.closest(".role-opt");
+        if (ro) { document.querySelectorAll(".role-opt").forEach((x) => x.classList.remove("on")); ro.classList.add("on"); return; }
+        const at = e.target.closest("[data-auth-tab]");
+        if (at) { document.querySelectorAll(".at").forEach((x) => x.classList.remove("on")); at.classList.add("on"); return; }
+        if (e.target.closest("[data-auth-go]")) {
+          const sel = document.querySelector(".role-opt.on");
+          S.persona = sel && sel.getAttribute("data-auth-role") === "company" ? "company" : "developer";
+          return nav(S.persona === "company" ? "company" : "home");
+        }
         const rv = e.target.closest("[data-repview]");
         if (rv) { S.repView = rv.getAttribute("data-repview"); render(); return; }
         const dt = e.target.closest(".dock-tab");
