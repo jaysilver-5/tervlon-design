@@ -799,10 +799,10 @@
       @media (max-width: 760px) { .auth { grid-template-columns: 1fr; } .auth-brand { display: none; } }
 
       /* billing */
-      .region-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
-      .rg { font-size: 12px; font-weight: 500; padding: 7px 13px; border-radius: 99px; border: 1px solid var(--line-2); background: var(--panel); color: var(--ink-2); }
-      .rg:hover { border-color: var(--line-3); }
-      .rg.on { background: var(--ink); color: #fff; border-color: var(--ink); }
+      .region-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 20px; }
+      /* Region pricing is resolved server-side from the billing account — never a user-picked toggle. */
+      .rg-auto { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 500; padding: 7px 13px; border-radius: 99px; border: 1px dashed var(--line-3); background: var(--panel-2, var(--panel)); color: var(--muted); }
+      .rg-auto b { color: var(--ink-2); font-weight: 600; }
       .plan-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
       .plan { position: relative; background: var(--panel); border: 1px solid var(--line-2); border-radius: 16px; padding: 22px; box-shadow: var(--sh-1); display: flex; flex-direction: column; }
       .plan.pop { border-color: var(--blue); box-shadow: 0 0 0 1px var(--blue-line), var(--sh-2); }
@@ -1035,7 +1035,8 @@
       const S = {
         persona: "developer", // developer | company | institution — set at auth/onboarding, switched from the account menu (not nav tabs)
         acctOpen: false,
-        region: "TIER_1",
+        region: "TIER_1", // region pricing tier — resolved server-side from the billing account, NOT user-selectable
+
         route: "home",
         dock: "board",
         term: "terminal",
@@ -1885,7 +1886,7 @@
           <div class="dash-grid" style="grid-template-columns:1fr 320px;align-items:start">
             <div>
               <div class="greet" style="margin-bottom:14px"><div><h1 class="display" style="font-size:26px">Plans & credits</h1><p class="lead" style="margin-top:6px">Runtime access is credit-based — a sprint consumes one credit. Pricing is region-aware; the processor is Paddle.</p></div></div>
-              <div class="region-row">${BILLING.regions.map((r) => `<button class="rg ${r.id === S.region ? "on" : ""}" data-region="${r.id}">${r.label}</button>`).join("")}</div>
+              <div class="region-row"><span class="rg-auto">${svg(icon.shield, 13, 1.9)} Regional pricing: <b>${region().label}</b> · set automatically from your account</span></div>
               <div class="plan-grid">${BILLING.plans.map(planCard).join("")}</div>
               <div class="footer" style="margin-top:30px"><span>Prices and Paddle ids are editable catalog data — changing them never touches the runtime.</span></div>
             </div>
@@ -2101,8 +2102,6 @@
         if (scn) { scn.parentElement.querySelectorAll(".scn").forEach((x) => x.classList.remove("on")); scn.classList.add("on"); return; }
         const ro = e.target.closest(".role-opt");
         if (ro) { document.querySelectorAll(".role-opt").forEach((x) => x.classList.remove("on")); ro.classList.add("on"); return; }
-        const rg = e.target.closest("[data-region]");
-        if (rg) { S.region = rg.getAttribute("data-region"); render(); return; }
         const at = e.target.closest("[data-auth-tab]");
         if (at) { document.querySelectorAll(".at").forEach((x) => x.classList.remove("on")); at.classList.add("on"); return; }
         if (e.target.closest("[data-auth-go]")) {
