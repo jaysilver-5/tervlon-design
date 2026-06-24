@@ -14,9 +14,13 @@ against later. Open `index.html` in any modern browser.
 
 ## Files
 
-- **`index.html` — the app.** One SPA with a tiny hash router. Every rail item and every
-  tab routes to a real view; nothing is a dead click. Views: **Home · Catalog · Workspace ·
-  Standup · Scorecard**.
+- **`index.html` — the app.** One SPA with a tiny hash router and a **Developer/Company
+  persona switch**. Every rail item and tab routes to a real view; nothing is a dead click.
+  - **Developer:** Home (dashboard) · Catalog · Workspace · Standup (modal) · Scorecard ·
+    Profile (credential) · Billing.
+  - **Company:** Dashboard · Review board · Assessments (+ invite/create modals) · the
+    company report (integrity evidence timeline + confidence band).
+  - **Front door:** Auth (sign-in / role chooser) · public Invite landing.
 - **`legacy-prototype.html`** — the earlier full React prototype (dark theme). Kept purely
   as a **behaviour reference** — it documents the exact API surface, events, and gating the
   design is built against. Not the current look.
@@ -92,11 +96,16 @@ renders a brief and will upgrade automatically when that field lands.
 
 ## Status & next
 
-Built and committed in steps on this branch. Done: the central SPA + all five views with the
-reworked workspace, the IDE terminal, working dock tabs, and the standup→review→scorecard arc.
+Built and committed in steps on this branch. **Done:** the central SPA with both personas —
+developer (dashboard, catalog, workspace + IDE terminal, minimizable standup, scorecard with
+radar, profile, billing) and company (dashboard, review board, assessments + invite/create
+modals, company report), plus the auth + invite front door. Every screen traces to a real
+backend field/action; the standup arrives as a director nudge, checks are async, actions are
+gated, billing is credit-based.
 
-Next polish passes: deepen the **review** surface (inline diff comments), the **company /
-reviewer** scorecard view (integrity evidence timeline), and **billing / onboarding**.
+**Next candidates:** deepen the workspace review surface (inline diff comments), a live preview
+pane for frontend sprints (:5173), the institution persona (cohorts/analytics), and a
+responsive / empty-state / a11y pass.
 
 *Caveat: verified by static parse + a Node render-harness over every view (the sandbox blocks
 a headless-browser download, so no screenshots here). Open `index.html` to see it live.*
