@@ -463,6 +463,15 @@
       .composer .box { border: 1px solid var(--line-2); border-radius: 10px; padding: 9px 11px; font-size: 12.5px; color: var(--muted); display: flex; align-items: center; gap: 8px; }
       .composer .box:hover { border-color: var(--line-3); }
       .composer input { flex: 1; border: none; outline: none; background: transparent; color: var(--ink); font-size: 12.5px; }
+      /* @mention autocomplete (WhatsApp/Slack-style) */
+      .mention-pop { position: absolute; bottom: calc(100% + 8px); left: 0; min-width: 220px; background: var(--panel); border: 1px solid var(--line-2); border-radius: 12px; box-shadow: var(--sh-pop); overflow: hidden; z-index: 40; animation: rise 0.18s ease both; }
+      .mention-head { font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--faint); padding: 9px 12px 5px; }
+      .mention-opt { display: flex; align-items: center; gap: 9px; padding: 8px 11px; cursor: pointer; }
+      .mention-opt.on, .mention-opt:hover { background: var(--blue-tint); }
+      .mention-opt .nm { font-size: 12.5px; font-weight: 540; }
+      .mention-opt .ro { font-size: 11px; color: var(--muted); margin-left: auto; }
+      .tr-input { position: relative; }
+      .composer .box { position: relative; }
 
       /* dock: references */
       .ref { padding: 12px; }
@@ -1033,7 +1042,7 @@
           <div class="chan" style="flex:1">${CHAT.map(m).join("")}
             <div class="msg">${av("priya", 26)}<div class="msg-b"><div class="msg-h"><span class="nm" style="color:${PEOPLE.priya.c}">Priya</span></div><div class="typing"><i></i><i></i><i></i></div></div></div>
           </div>
-          <div class="composer"><div class="box"><input placeholder="Message the team…"/>${svg(icon.send, 16, 2).replace("currentColor", "var(--faint)")}</div></div>
+          <div class="composer"><div class="box"><input id="chat-in" class="mentionable" placeholder="Message the team…  (type @ to mention)" autocomplete="off"/>${svg(icon.send, 16, 2).replace("currentColor", "var(--faint)")}</div></div>
         </div>`;
       }
       function dockRef() {
@@ -1207,7 +1216,7 @@
         if (meetState.done)
           return `<button class="btn btn-violet" style="width:100%" id="wrap-btn">${svg(icon.check, 15, 2)} Continue to workspace</button>`;
         return `<div class="qps">${QUICK_PROMPTS.map((q) => `<button class="qp" data-qp="${q.replace(/"/g, "&quot;")}">${q}</button>`).join("")}</div>
-          <div class="tr-input"><input id="tr-in" placeholder="Walk Sarah through your work…" autocomplete="off"/><button class="btn btn-violet" id="tr-send">${svg(icon.send, 15, 2)}</button></div>`;
+          <div class="tr-input"><input id="tr-in" class="mentionable" placeholder="Walk Sarah through your work…" autocomplete="off"/><button class="btn btn-violet" id="tr-send">${svg(icon.send, 15, 2)}</button></div>`;
       }
 
       /* ════════════════ SCORECARD ════════════════ */
@@ -1364,8 +1373,13 @@
         S.termLines = (S.termLines.length ? S.termLines : DEFAULT_TERM.slice()).concat([prompt, ...out]);
       }
 
-      // event delegation
+      // @mention: open/filter as you type
+      document.addEventListener("input", (e) => {
+        if (e.target.classList && e.target.classList.contains("mentionable")) updateMention(e.target);
+      });
       document.addEventListener("click", (e) => {
+        const mo = e.target.closest(".mention-opt");
+        if (mo) return pickMention(mo.getAttribute("data-mk"));
         const routeEl = e.target.closest("[data-route]");
         if (routeEl) {
           const dk = routeEl.getAttribute("data-dock");
@@ -1398,6 +1412,13 @@
         if (e.target.closest("#report-btn") && !e.target.closest("#report-btn").disabled) return nav("scorecard");
       });
       document.addEventListener("keydown", (e) => {
+        // mention picker steals arrows / enter / esc while open
+        if (mention && e.target === mention.el) {
+          if (e.key === "ArrowDown") { mention.idx = (mention.idx + 1) % mention.opts.length; renderMention(); return e.preventDefault(); }
+          if (e.key === "ArrowUp") { mention.idx = (mention.idx - 1 + mention.opts.length) % mention.opts.length; renderMention(); return e.preventDefault(); }
+          if (e.key === "Enter" || e.key === "Tab") { pickMention(mention.opts[mention.idx]); return e.preventDefault(); }
+          if (e.key === "Escape") { closeMention(); return e.preventDefault(); }
+        }
         if (e.target.id === "term-in" && e.key === "Enter") {
           runTermCmd(e.target.value);
           updateTerminal();
@@ -1495,6 +1516,44 @@
       }
 
       function wireWorkspace() { /* listeners are delegated; hook kept for in-place refreshes */ }
+
+      /* ════════════════ @MENTION AUTOCOMPLETE ════════════════ */
+      // Maps to the backend chat targetActor (@Sarah -> targetActor: 'sarah').
+      const MENTIONABLE = ["sarah", "marcus", "priya", "james"];
+      let mention = null; // { el, start, idx, opts }
+      function updateMention(el) {
+        const pos = el.selectionStart;
+        const m = el.value.slice(0, pos).match(/(?:^|\s)@(\w*)$/);
+        if (!m) return closeMention();
+        const q = m[1].toLowerCase();
+        const opts = MENTIONABLE.filter((k) => PEOPLE[k].name.toLowerCase().includes(q) || k.includes(q));
+        if (!opts.length) return closeMention();
+        mention = { el, start: pos - m[1].length - 1, idx: 0, opts };
+        renderMention();
+      }
+      function renderMention() {
+        if (!mention) return;
+        const host = mention.el.parentElement;
+        host.style.position = "relative";
+        let pop = host.querySelector(".mention-pop");
+        if (!pop) { pop = document.createElement("div"); pop.className = "mention-pop"; host.appendChild(pop); }
+        pop.innerHTML = `<div class="mention-head">Mention a teammate</div>` +
+          mention.opts.map((k, i) => `<div class="mention-opt ${i === mention.idx ? "on" : ""}" data-mk="${k}">${av(k, 24)}<span class="nm">${PEOPLE[k].name}</span><span class="ro">${PEOPLE[k].role || ""}</span></div>`).join("");
+      }
+      function closeMention() {
+        if (mention) { const p = mention.el.parentElement.querySelector(".mention-pop"); if (p) p.remove(); }
+        mention = null;
+      }
+      function pickMention(k) {
+        if (!mention) return;
+        const el = mention.el, first = PEOPLE[k].name.split(" ")[0];
+        const after = el.value.slice(el.selectionStart);
+        el.value = el.value.slice(0, mention.start) + "@" + first + " " + after;
+        const caret = mention.start + first.length + 2;
+        closeMention();
+        el.focus();
+        el.setSelectionRange(caret, caret);
+      }
 
       /* ════════════════ BOOT ════════════════ */
       (function boot() {
