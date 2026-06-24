@@ -1,0 +1,1490 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tervlon — Workspace</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&family=Inter:opsz,wght@14..32,400;14..32,440;14..32,500;14..32,560;14..32,620&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* ══════════════════════════════════════════════════════════════════
+         TERVLON — Workspace (redesign, light)
+         The lived-in sprint room. One screen, four regions, calm by default.
+         Grounded in the backend contract: action-gated buttons, async checks
+         (queued -> result), review gating with a reason, tiered activity,
+         the board's todo/in_progress/in_review/done. Design only — not wired.
+         Tokens identical to redesign.html.
+         ══════════════════════════════════════════════════════════════════ */
+      :root {
+        --bg: #fbfcfe;
+        --panel: #ffffff;
+        --panel-2: #f6f8fb;
+        --well: #f1f5f9;
+        --line: #eceff4;
+        --line-2: #e2e8ef;
+        --line-3: #d4dde6;
+        --ink: #0c1a28;
+        --ink-2: #44566a;
+        --muted: #74879a;
+        --faint: #a2b1bf;
+        --blue: #1a7ec2;
+        --blue-d: #14679f;
+        --blue-tint: #eef5fb;
+        --blue-tint-2: #e2eef8;
+        --blue-line: #cde0ef;
+        --b1: #56c6eb;
+        --b2: #2e8bce;
+        --b3: #155fa0;
+        --grad: linear-gradient(152deg, var(--b1) 0%, var(--b2) 50%, var(--b3) 100%);
+        --sarah: #6a5fd6;
+        --marcus: #178a64;
+        --priya: #cf6f3e;
+        --james: #3d6fa8;
+        --ok: #14935f;
+        --ok-tint: #e7f5ee;
+        --warn: #b9802c;
+        --warn-tint: #fbf2e2;
+        --err: #cf4a39;
+        --err-tint: #fbeae6;
+        --sh-1: 0 1px 2px rgba(12, 26, 40, 0.05);
+        --sh-2: 0 6px 20px rgba(12, 26, 40, 0.08);
+        --sh-pop: 0 16px 48px rgba(12, 26, 40, 0.16);
+        --serif: "Instrument Serif", Georgia, serif;
+        --mono: "JetBrains Mono", ui-monospace, monospace;
+        --sans: "Inter", system-ui, sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html,
+      body {
+        height: 100%;
+        overflow: hidden;
+      }
+      body {
+        font-family: var(--sans);
+        background: var(--bg);
+        color: var(--ink);
+        font-size: 13px;
+        line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+        letter-spacing: -0.006em;
+      }
+      svg {
+        display: block;
+      }
+      .ico {
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      ::-webkit-scrollbar {
+        width: 9px;
+        height: 9px;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--line-3);
+        border-radius: 99px;
+        border: 2.5px solid transparent;
+        background-clip: padding-box;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: var(--faint);
+        background-clip: padding-box;
+      }
+      button {
+        font-family: inherit;
+        cursor: pointer;
+      }
+      .tnum {
+        font-variant-numeric: tabular-nums;
+      }
+      .mono {
+        font-family: var(--mono);
+      }
+      .av {
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        color: #fff;
+        font-weight: 560;
+        flex-shrink: 0;
+      }
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 11px;
+        font-weight: 540;
+        padding: 2.5px 8px;
+        border-radius: 6px;
+        letter-spacing: -0.004em;
+      }
+      .chip-line {
+        border: 1px solid var(--line-2);
+        color: var(--ink-2);
+        background: var(--panel);
+      }
+      .chip-blue {
+        background: var(--blue-tint);
+        color: var(--blue-d);
+        border: 1px solid var(--blue-line);
+      }
+      .chip-ok {
+        background: var(--ok-tint);
+        color: var(--ok);
+      }
+      .dot {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+      }
+
+      .btn {
+        font-weight: 540;
+        font-size: 12.5px;
+        letter-spacing: -0.01em;
+        border: 1px solid transparent;
+        border-radius: 8px;
+        padding: 7px 13px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        white-space: nowrap;
+        transition:
+          transform 0.14s,
+          box-shadow 0.18s,
+          background 0.15s,
+          border-color 0.15s,
+          color 0.15s;
+      }
+      .btn svg {
+        width: 15px;
+        height: 15px;
+        stroke-width: 2;
+      }
+      .btn:active {
+        transform: translateY(0.5px);
+      }
+      .btn-pri {
+        background: var(--ink);
+        color: #fff;
+      }
+      .btn-pri:hover {
+        background: #16293a;
+        transform: translateY(-1px);
+        box-shadow: var(--sh-2);
+      }
+      .btn-blue {
+        background: var(--blue);
+        color: #fff;
+      }
+      .btn-blue:hover {
+        background: var(--blue-d);
+        transform: translateY(-1px);
+      }
+      .btn-ghost {
+        background: var(--panel);
+        color: var(--ink-2);
+        border-color: var(--line-2);
+      }
+      .btn-ghost:hover {
+        border-color: var(--line-3);
+        color: var(--ink);
+        transform: translateY(-1px);
+      }
+      .btn:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+        transform: none;
+        background: var(--panel-2);
+        color: var(--faint);
+        border-color: var(--line-2);
+        box-shadow: none;
+      }
+
+      /* ════════ LAYOUT ════════ */
+      .ws {
+        display: grid;
+        grid-template-rows: 53px 1fr 27px;
+        height: 100vh;
+      }
+      .topbar {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 0 16px;
+        background: var(--panel);
+        border-bottom: 1px solid var(--line);
+        z-index: 5;
+      }
+      .home-btn {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding-right: 14px;
+        border-right: 1px solid var(--line);
+        height: 30px;
+        color: var(--ink);
+        text-decoration: none;
+      }
+      .home-btn .mark {
+        width: 24px;
+        height: 24px;
+      }
+      .sprint-id {
+        line-height: 1.2;
+      }
+      .sprint-id .t {
+        font-size: 13.5px;
+        font-weight: 560;
+        letter-spacing: -0.02em;
+      }
+      .sprint-id .s {
+        font-size: 11px;
+        color: var(--muted);
+      }
+      .presence {
+        display: flex;
+        align-items: center;
+        margin-left: 4px;
+      }
+      .presence .av {
+        width: 27px;
+        height: 27px;
+        font-size: 10px;
+        border: 2px solid var(--panel);
+        margin-left: -6px;
+        position: relative;
+      }
+      .presence .av::after {
+        content: "";
+        position: absolute;
+        right: -1px;
+        bottom: -1px;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--ok);
+        border: 1.5px solid var(--panel);
+      }
+      .presence .av.off::after {
+        background: var(--faint);
+      }
+
+      .main {
+        display: grid;
+        grid-template-columns: 248px 1fr 340px;
+        min-height: 0;
+      }
+      .col {
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+      }
+      .col-board {
+        background: var(--panel-2);
+        border-right: 1px solid var(--line);
+      }
+      .col-center {
+        min-width: 0;
+        background: var(--bg);
+      }
+      .col-dock {
+        background: var(--panel);
+        border-left: 1px solid var(--line);
+      }
+      .pane-h {
+        height: 38px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0 14px;
+        flex-shrink: 0;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      /* ── board ── */
+      .board {
+        overflow-y: auto;
+        padding: 6px 12px 16px;
+        flex: 1;
+      }
+      .board-group {
+        margin-top: 14px;
+      }
+      .board-group:first-child {
+        margin-top: 4px;
+      }
+      .bg-h {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        margin-bottom: 8px;
+        font-size: 10.5px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .bg-h .n {
+        margin-left: auto;
+        color: var(--faint);
+        font-weight: 600;
+      }
+      .tk {
+        background: var(--panel);
+        border: 1px solid var(--line-2);
+        border-radius: 10px;
+        padding: 11px 12px;
+        margin-bottom: 7px;
+        cursor: pointer;
+        transition:
+          border-color 0.15s,
+          box-shadow 0.15s,
+          transform 0.15s;
+      }
+      .tk:hover {
+        border-color: var(--line-3);
+        box-shadow: var(--sh-1);
+      }
+      .tk.active {
+        border-color: var(--blue-line);
+        background: linear-gradient(180deg, var(--blue-tint), var(--panel) 70%);
+        box-shadow:
+          0 0 0 1px var(--blue-line),
+          var(--sh-1);
+      }
+      .tk.done {
+        opacity: 0.66;
+      }
+      .tk-top {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        margin-bottom: 5px;
+      }
+      .tk-id {
+        font-family: var(--mono);
+        font-size: 10.5px;
+        font-weight: 500;
+        color: var(--muted);
+      }
+      .tk.active .tk-id {
+        color: var(--blue-d);
+      }
+      .tk-title {
+        font-size: 12.5px;
+        font-weight: 500;
+        letter-spacing: -0.01em;
+        color: var(--ink);
+        line-height: 1.35;
+      }
+      .tk-owner {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 8px;
+        font-size: 10.5px;
+        color: var(--muted);
+      }
+      .tk-owner .av {
+        width: 17px;
+        height: 17px;
+        font-size: 8px;
+      }
+      .status-led {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+
+      /* ── center: ticket strip + editor + terminal ── */
+      .ticket-strip {
+        background: var(--panel);
+        border-bottom: 1px solid var(--line);
+        padding: 13px 18px;
+        flex-shrink: 0;
+      }
+      .ts-top {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+      }
+      .ts-title {
+        font-size: 15px;
+        font-weight: 560;
+        letter-spacing: -0.02em;
+      }
+      .ts-sub {
+        font-size: 11.5px;
+        color: var(--muted);
+        margin-top: 1px;
+      }
+      .ts-actions {
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .ac {
+        margin-top: 12px;
+        display: flex;
+        gap: 18px;
+        flex-wrap: wrap;
+      }
+      .ac-item {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        font-size: 11.5px;
+        color: var(--ink-2);
+      }
+      .ac-item .tick {
+        width: 15px;
+        height: 15px;
+        border-radius: 5px;
+        display: grid;
+        place-items: center;
+        flex-shrink: 0;
+      }
+      .ac-item.done .tick {
+        background: var(--ok);
+        color: #fff;
+      }
+      .ac-item.todo .tick {
+        border: 1.5px solid var(--line-3);
+      }
+      .ac-item.todo {
+        color: var(--muted);
+      }
+
+      .editor-wrap {
+        flex: 1;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+      }
+      .tabbar {
+        height: 37px;
+        display: flex;
+        align-items: stretch;
+        background: var(--panel-2);
+        border-bottom: 1px solid var(--line);
+        flex-shrink: 0;
+      }
+      .ftab {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        padding: 0 14px;
+        font-size: 12px;
+        color: var(--muted);
+        border-right: 1px solid var(--line);
+        cursor: pointer;
+        position: relative;
+      }
+      .ftab.on {
+        background: var(--bg);
+        color: var(--ink);
+      }
+      .ftab.on::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: -1px;
+        height: 2px;
+        background: var(--blue);
+      }
+      .ftab .lang {
+        width: 7px;
+        height: 7px;
+        border-radius: 2px;
+        background: var(--blue);
+      }
+      .ftab .x {
+        color: var(--faint);
+        font-size: 14px;
+        line-height: 1;
+      }
+      .editor {
+        flex: 1;
+        min-height: 0;
+        display: grid;
+        grid-template-columns: 168px 1fr;
+        background: var(--bg);
+      }
+      .tree {
+        border-right: 1px solid var(--line);
+        padding: 10px 8px;
+        overflow-y: auto;
+        font-size: 12px;
+      }
+      .tnode {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        padding: 5px 8px;
+        border-radius: 7px;
+        color: var(--ink-2);
+        cursor: pointer;
+        white-space: nowrap;
+      }
+      .tnode:hover {
+        background: var(--well);
+      }
+      .tnode.on {
+        background: var(--blue-tint);
+        color: var(--blue-d);
+        font-weight: 500;
+      }
+      .tnode.dir {
+        color: var(--muted);
+        font-weight: 500;
+      }
+      .tnode svg {
+        width: 14px;
+        height: 14px;
+        stroke-width: 1.9;
+        flex-shrink: 0;
+      }
+      .tnode .ind {
+        padding-left: 16px;
+      }
+      .code {
+        overflow: auto;
+        min-width: 0;
+        font-family: var(--mono);
+        font-size: 12.5px;
+        line-height: 1.7;
+        padding: 12px 0;
+        background: var(--panel);
+      }
+      .line {
+        display: flex;
+        padding: 0 16px 0 0;
+      }
+      .line:hover {
+        background: var(--panel-2);
+      }
+      .ln {
+        width: 46px;
+        flex-shrink: 0;
+        text-align: right;
+        padding-right: 16px;
+        color: var(--faint);
+        user-select: none;
+      }
+      .cl {
+        white-space: pre;
+      }
+      .k {
+        color: #1457a0;
+      }
+      .ty {
+        color: var(--blue);
+      }
+      .st {
+        color: var(--marcus);
+      }
+      .nu {
+        color: var(--warn);
+      }
+      .fn {
+        color: var(--sarah);
+      }
+      .cm {
+        color: var(--faint);
+        font-style: italic;
+      }
+      .pn {
+        color: var(--ink-2);
+      }
+
+      /* ── terminal / checks ── */
+      .terminal {
+        height: 188px;
+        border-top: 1px solid var(--line);
+        background: var(--panel);
+        display: flex;
+        flex-direction: column;
+        flex-shrink: 0;
+      }
+      .term-h {
+        height: 36px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 0 14px;
+        border-bottom: 1px solid var(--line);
+        flex-shrink: 0;
+      }
+      .term-tab {
+        font-size: 11.5px;
+        font-weight: 540;
+        color: var(--muted);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+      }
+      .term-tab.on {
+        color: var(--ink);
+      }
+      .term-body {
+        flex: 1;
+        overflow-y: auto;
+        font-family: var(--mono);
+        font-size: 12px;
+        line-height: 1.7;
+        padding: 10px 14px;
+        color: var(--ink-2);
+      }
+      .term-body .p {
+        color: var(--blue);
+      }
+      .term-body .ok {
+        color: var(--ok);
+      }
+      .term-body .dim {
+        color: var(--faint);
+      }
+      .check-running {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        font-family: var(--sans);
+        font-size: 12.5px;
+        color: var(--ink-2);
+        background: var(--blue-tint);
+        border: 1px solid var(--blue-line);
+        border-radius: 9px;
+        padding: 9px 12px;
+        margin-bottom: 10px;
+      }
+      .spinner {
+        width: 14px;
+        height: 14px;
+        border: 2px solid var(--blue-line);
+        border-top-color: var(--blue);
+        border-radius: 50%;
+        animation: spin 0.7s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* ── right dock ── */
+      .dock-tabs {
+        display: flex;
+        border-bottom: 1px solid var(--line);
+        flex-shrink: 0;
+        padding: 0 6px;
+      }
+      .dock-tab {
+        flex: 1;
+        padding: 12px 6px;
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--muted);
+        background: none;
+        border: none;
+        border-bottom: 2px solid transparent;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+      }
+      .dock-tab svg {
+        width: 15px;
+        height: 15px;
+        stroke-width: 1.9;
+      }
+      .dock-tab.on {
+        color: var(--ink);
+        border-bottom-color: var(--blue);
+      }
+      .dock-tab .badge {
+        background: var(--blue);
+        color: #fff;
+        font-size: 9.5px;
+        font-weight: 600;
+        border-radius: 99px;
+        padding: 0 5px;
+        line-height: 15px;
+      }
+      .dock-body {
+        flex: 1;
+        overflow-y: auto;
+        min-height: 0;
+      }
+
+      /* channel */
+      .chan {
+        padding: 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+      .msg {
+        display: flex;
+        gap: 9px;
+      }
+      .msg .av {
+        width: 26px;
+        height: 26px;
+        font-size: 9.5px;
+        margin-top: 1px;
+      }
+      .msg-b {
+        min-width: 0;
+      }
+      .msg-h {
+        display: flex;
+        align-items: baseline;
+        gap: 7px;
+        margin-bottom: 2px;
+      }
+      .msg-h .nm {
+        font-size: 12.5px;
+        font-weight: 560;
+        letter-spacing: -0.01em;
+      }
+      .msg-h .ti {
+        font-size: 10.5px;
+        color: var(--faint);
+      }
+      .msg-t {
+        font-size: 12.5px;
+        color: var(--ink-2);
+        line-height: 1.5;
+      }
+      .msg-t code {
+        font-family: var(--mono);
+        font-size: 11px;
+        background: var(--well);
+        padding: 1px 5px;
+        border-radius: 4px;
+        color: var(--ink);
+      }
+      .typing {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        padding: 4px 0;
+      }
+      .typing i {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: var(--faint);
+        animation: td 1.3s ease infinite;
+      }
+      .typing i:nth-child(2) {
+        animation-delay: 0.18s;
+      }
+      .typing i:nth-child(3) {
+        animation-delay: 0.36s;
+      }
+      @keyframes td {
+        0%, 80%, 100% {
+          opacity: 0.25;
+          transform: scale(0.7);
+        }
+        40% {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+      .composer {
+        border-top: 1px solid var(--line);
+        padding: 10px;
+        flex-shrink: 0;
+      }
+      .composer .box {
+        border: 1px solid var(--line-2);
+        border-radius: 10px;
+        padding: 9px 11px;
+        font-size: 12.5px;
+        color: var(--muted);
+        display: flex;
+        align-items: center;
+      }
+      .composer .box:hover {
+        border-color: var(--line-3);
+      }
+
+      /* references */
+      .ref {
+        padding: 12px;
+      }
+      .ref-search {
+        border: 1px solid var(--line-2);
+        border-radius: 9px;
+        padding: 8px 11px;
+        font-size: 12px;
+        color: var(--muted);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 12px;
+      }
+      .ref-search svg {
+        width: 14px;
+        height: 14px;
+        stroke-width: 2;
+        color: var(--faint);
+      }
+      .ref-card {
+        border: 1px solid var(--line-2);
+        border-radius: 10px;
+        padding: 12px;
+        margin-bottom: 8px;
+        cursor: pointer;
+        transition:
+          border-color 0.14s,
+          box-shadow 0.14s;
+      }
+      .ref-card:hover {
+        border-color: var(--blue-line);
+        box-shadow: var(--sh-1);
+      }
+      .ref-kind {
+        font-size: 9.5px;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        padding: 2px 6px;
+        border-radius: 5px;
+        background: var(--well);
+        color: var(--muted);
+      }
+      .ref-card.tagged .ref-kind {
+        background: var(--blue-tint);
+        color: var(--blue-d);
+      }
+      .ref-t {
+        font-size: 12.5px;
+        font-weight: 540;
+        margin: 8px 0 3px;
+        letter-spacing: -0.01em;
+      }
+      .ref-s {
+        font-size: 11.5px;
+        color: var(--muted);
+        line-height: 1.5;
+      }
+
+      /* activity (tiered) */
+      .activity {
+        padding: 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+      .ev {
+        display: flex;
+        gap: 10px;
+        padding: 7px 2px;
+        font-size: 12px;
+        color: var(--ink-2);
+        align-items: flex-start;
+      }
+      .ev .rail {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        flex-shrink: 0;
+      }
+      .ev .ed {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        margin-top: 5px;
+        background: var(--line-3);
+      }
+      .ev.ambient .ed {
+        background: var(--line-3);
+      }
+      .ev.active .ed {
+        background: var(--warn);
+      }
+      .ev .ln2 {
+        width: 1.5px;
+        flex: 1;
+        background: var(--line);
+        margin-top: 3px;
+      }
+      .ev .et {
+        flex: 1;
+        line-height: 1.45;
+      }
+      .ev .time {
+        color: var(--faint);
+        font-size: 10.5px;
+      }
+      .ev .who {
+        font-weight: 560;
+        color: var(--ink);
+      }
+
+      /* status bar */
+      .statusbar {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 0 14px;
+        background: var(--panel);
+        border-top: 1px solid var(--line);
+        font-size: 11px;
+        color: var(--muted);
+      }
+      .sb-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .sb-led {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--ok);
+        box-shadow: 0 0 0 0 rgba(20, 147, 95, 0.5);
+        animation: sbp 2.6s infinite;
+      }
+      @keyframes sbp {
+        0% {
+          box-shadow: 0 0 0 0 rgba(20, 147, 95, 0.45);
+        }
+        70% {
+          box-shadow: 0 0 0 6px rgba(20, 147, 95, 0);
+        }
+        100% {
+          box-shadow: 0 0 0 0 rgba(20, 147, 95, 0);
+        }
+      }
+
+      /* gentle toast — an 'active' tier example (review completed) */
+      .toast {
+        position: fixed;
+        top: 64px;
+        right: 18px;
+        width: 320px;
+        background: var(--panel);
+        border: 1px solid var(--line-2);
+        border-left: 3px solid var(--james);
+        border-radius: 12px;
+        box-shadow: var(--sh-pop);
+        padding: 13px 14px;
+        z-index: 40;
+        animation: tin 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+      }
+      @keyframes tin {
+        from {
+          opacity: 0;
+          transform: translateY(-8px) scale(0.98);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      .toast .th {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 6px;
+      }
+      .toast .th .nm {
+        font-size: 12.5px;
+        font-weight: 560;
+      }
+      .toast .th .tier {
+        margin-left: auto;
+        font-size: 9.5px;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--james);
+      }
+      .toast p {
+        font-size: 12px;
+        color: var(--ink-2);
+        line-height: 1.5;
+      }
+      .toast .ta {
+        display: flex;
+        gap: 8px;
+        margin-top: 11px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="ws">
+      <!-- ════ TOP BAR ════ -->
+      <header class="topbar">
+        <a class="home-btn" href="redesign.html" title="Back to home">
+          <svg class="mark" viewBox="0 0 100 100" aria-hidden="true">
+            <defs>
+              <linearGradient id="lg" x1="22%" y1="2%" x2="56%" y2="100%">
+                <stop offset="0%" stop-color="#56c6eb" />
+                <stop offset="52%" stop-color="#2e8bce" />
+                <stop offset="100%" stop-color="#155fa0" />
+              </linearGradient>
+            </defs>
+            <path d="M50 64 L31 31" stroke="url(#lg)" stroke-width="9.5" stroke-linecap="round" />
+            <path d="M50 64 L72 41" stroke="url(#lg)" stroke-width="7.5" stroke-linecap="round" />
+            <circle cx="30" cy="27" r="19" fill="url(#lg)" />
+            <circle cx="74" cy="39" r="10.5" fill="url(#lg)" />
+            <circle cx="50" cy="72" r="17" fill="url(#lg)" />
+          </svg>
+        </a>
+        <div class="sprint-id">
+          <div class="t">E-Commerce API Sprint</div>
+          <div class="s">Backend · Mid · Day 2</div>
+        </div>
+        <span class="chip chip-line"><span class="dot" style="background: var(--blue)"></span>Node / TypeScript</span>
+
+        <div style="flex: 1"></div>
+
+        <div class="presence">
+          <span class="av" title="Sarah Chen · Lead" style="background: var(--sarah)">SC</span>
+          <span class="av" title="Marcus Rivera · Senior" style="background: var(--marcus)">MR</span>
+          <span class="av" title="Priya Sharma · Peer" style="background: var(--priya)">PS</span>
+          <span class="av off" title="James Okonkwo · Reviewer (idle)" style="background: var(--james)">JO</span>
+        </div>
+        <button class="btn btn-ghost">
+          <svg class="ico" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="9" />
+            <path d="M12 7v5l3 2" />
+          </svg>
+          38:12 left
+        </button>
+        <button class="btn btn-pri" id="complete-btn" disabled title="Finish all tickets and a standup to generate your report">
+          <svg class="ico" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M6 3h8l4 4v14H6z" /><path d="M9 13h6M9 17h4" /></svg>
+          Generate report
+        </button>
+      </header>
+
+      <!-- ════ MAIN ════ -->
+      <div class="main">
+        <!-- LEFT: BOARD -->
+        <div class="col col-board">
+          <div class="pane-h">Sprint board</div>
+          <div class="board">
+            <div class="board-group">
+              <div class="bg-h"><span class="status-led" style="background: var(--blue)"></span>In progress <span class="n">1</span></div>
+              <div class="tk active">
+                <div class="tk-top">
+                  <span class="tk-id">T-03</span>
+                  <span class="chip chip-blue" style="margin-left: auto">Active</span>
+                </div>
+                <div class="tk-title">Build reusable JWT bearer auth middleware</div>
+                <div class="tk-owner"><span class="av" style="background: var(--grad)">JO</span>You · 2 criteria left</div>
+              </div>
+            </div>
+
+            <div class="board-group">
+              <div class="bg-h"><span class="status-led" style="background: var(--line-3)"></span>To do <span class="n">2</span></div>
+              <div class="tk">
+                <div class="tk-top"><span class="tk-id">T-04</span></div>
+                <div class="tk-title">Protect order routes with the guard</div>
+                <div class="tk-owner"><span class="av" style="background: var(--priya)">PS</span>Priya wires the model first</div>
+              </div>
+              <div class="tk">
+                <div class="tk-top"><span class="tk-id">T-05</span></div>
+                <div class="tk-title">Soft-delete filtering on product reads</div>
+                <div class="tk-owner">Unassigned</div>
+              </div>
+            </div>
+
+            <div class="board-group">
+              <div class="bg-h"><span class="status-led" style="background: var(--sarah)"></span>In review <span class="n">0</span></div>
+              <div style="font-size: 11.5px; color: var(--faint); padding: 2px 2px 4px">
+                James reviews here once checks pass.
+              </div>
+            </div>
+
+            <div class="board-group">
+              <div class="bg-h"><span class="status-led" style="background: var(--ok)"></span>Done <span class="n">2</span></div>
+              <div class="tk done">
+                <div class="tk-top"><span class="tk-id">T-01</span><span class="chip chip-ok" style="margin-left: auto">Passed</span></div>
+                <div class="tk-title">Login route issues a signed JWT</div>
+              </div>
+              <div class="tk done">
+                <div class="tk-top"><span class="tk-id">T-02</span><span class="chip chip-ok" style="margin-left: auto">Passed</span></div>
+                <div class="tk-title">Token payload carries userId + role</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CENTER -->
+        <div class="col col-center">
+          <div class="ticket-strip">
+            <div class="ts-top">
+              <div>
+                <div class="ts-title">T-03 · JWT bearer auth middleware</div>
+                <div class="ts-sub">Acceptance criteria · graded by a hidden test suite</div>
+              </div>
+              <div class="ts-actions">
+                <button class="btn btn-ghost" id="run-btn">
+                  <svg class="ico" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M6 4l13 8-13 8z" /></svg>
+                  Run checks
+                </button>
+                <button class="btn btn-blue" id="review-btn" disabled title="Run and pass checks before requesting review">
+                  <svg class="ico" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5" /></svg>
+                  Request review
+                </button>
+              </div>
+            </div>
+            <div class="ac">
+              <div class="ac-item done">
+                <span class="tick"><svg class="ico" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3" style="width: 9px; height: 9px"><path d="M20 6 9 17l-5-5" /></svg></span>
+                401 on missing or malformed header
+              </div>
+              <div class="ac-item done">
+                <span class="tick"><svg class="ico" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3" style="width: 9px; height: 9px"><path d="M20 6 9 17l-5-5" /></svg></span>
+                Verifies with JWT_SECRET, attaches userId
+              </div>
+              <div class="ac-item todo">
+                <span class="tick"></span>
+                Distinct response for expired tokens
+              </div>
+              <div class="ac-item todo">
+                <span class="tick"></span>
+                Guard is reusable across routers
+              </div>
+            </div>
+          </div>
+
+          <div class="editor-wrap">
+            <div class="tabbar">
+              <div class="ftab on">
+                <span class="lang"></span>auth.guard.ts<span class="x">×</span>
+              </div>
+              <div class="ftab"><span class="lang" style="background: var(--marcus)"></span>products.ts</div>
+              <div class="ftab"><span class="lang" style="background: var(--warn)"></span>auth.ts</div>
+            </div>
+            <div class="editor">
+              <div class="tree">
+                <div class="tnode dir">
+                  <svg class="ico" viewBox="0 0 24 24" stroke="currentColor"><path d="m6 9 6 6 6-6" /></svg>
+                  src
+                </div>
+                <div class="tnode dir ind">
+                  <svg class="ico" viewBox="0 0 24 24" stroke="currentColor"><path d="m6 9 6 6 6-6" /></svg>
+                  middleware
+                </div>
+                <div class="tnode on ind" style="padding-left: 32px">
+                  <svg class="ico" viewBox="0 0 24 24" stroke="currentColor"><path d="M6 3h8l4 4v14H6z" /></svg>
+                  auth.guard.ts
+                </div>
+                <div class="tnode dir ind">
+                  <svg class="ico" viewBox="0 0 24 24" stroke="currentColor"><path d="m6 9 6 6 6-6" /></svg>
+                  routes
+                </div>
+                <div class="tnode ind" style="padding-left: 32px">
+                  <svg class="ico" viewBox="0 0 24 24" stroke="currentColor"><path d="M6 3h8l4 4v14H6z" /></svg>
+                  products.ts
+                </div>
+                <div class="tnode ind" style="padding-left: 32px">
+                  <svg class="ico" viewBox="0 0 24 24" stroke="currentColor"><path d="M6 3h8l4 4v14H6z" /></svg>
+                  auth.ts
+                </div>
+                <div class="tnode ind">
+                  <svg class="ico" viewBox="0 0 24 24" stroke="currentColor"><path d="M6 3h8l4 4v14H6z" /></svg>
+                  index.ts
+                </div>
+              </div>
+              <div class="code" id="code"></div>
+            </div>
+          </div>
+
+          <div class="terminal">
+            <div class="term-h">
+              <div class="term-tab on" id="tt-checks">Checks</div>
+              <div class="term-tab" id="tt-term">Terminal</div>
+              <div style="flex: 1"></div>
+              <span class="chip chip-line mono" style="font-size: 10px">npm test</span>
+            </div>
+            <div class="term-body" id="term-body">
+              <div class="check-running" id="running" style="display: none">
+                <span class="spinner"></span>
+                Running hidden checks… queued on the isolated runner.
+              </div>
+              <div id="check-idle">
+                <span class="dim">Last run —</span> 2 of 4 acceptance signals passing.
+                <br /><span class="ok">✓ header-missing → 401</span> &nbsp; <span class="ok">✓ valid token attaches userId</span>
+                <br /><span class="dim">○ expired token still returns generic 401 — needs a distinct branch</span>
+                <br /><span class="dim">Hidden test bodies stay hidden; you see signals + hints, never the test file.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT DOCK -->
+        <div class="col col-dock">
+          <div class="dock-tabs">
+            <button class="dock-tab on" data-dock="chan">
+              <svg class="ico" viewBox="0 0 24 24" stroke="currentColor"><path d="M20 14a2 2 0 0 1-2 2H8l-4 3.5V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2z" /></svg>
+              Team<span class="badge">2</span>
+            </button>
+            <button class="dock-tab" data-dock="ref">
+              <svg class="ico" viewBox="0 0 24 24" stroke="currentColor"><path d="M4 5a2 2 0 0 1 2-2h9l5 5v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z" /></svg>
+              References
+            </button>
+            <button class="dock-tab" data-dock="act">
+              <svg class="ico" viewBox="0 0 24 24" stroke="currentColor"><path d="M3 12h4l3 8 4-16 3 8h4" /></svg>
+              Activity
+            </button>
+          </div>
+
+          <!-- channel -->
+          <div class="dock-body" id="dock-chan" style="display: flex; flex-direction: column">
+            <div class="chan" style="flex: 1">
+              <div class="msg">
+                <span class="av" style="background: var(--sarah)">SC</span>
+                <div class="msg-b">
+                  <div class="msg-h"><span class="nm" style="color: var(--sarah)">Sarah</span><span class="ti">9:34</span></div>
+                  <div class="msg-t">Good progress on T-01 and T-02. For the middleware, make sure you handle token expiration — the checks look for that specific case.</div>
+                </div>
+              </div>
+              <div class="msg">
+                <span class="av" style="background: var(--marcus)">MR</span>
+                <div class="msg-b">
+                  <div class="msg-h"><span class="nm" style="color: var(--marcus)">Marcus</span><span class="ti">9:36</span></div>
+                  <div class="msg-t">Return <code>401</code> with <code>TOKEN_EXPIRED</code> in the body — split it from the generic invalid-token branch. Saves debugging later.</div>
+                </div>
+              </div>
+              <div class="msg">
+                <span class="av" style="background: var(--priya)">PS</span>
+                <div class="msg-b">
+                  <div class="msg-h"><span class="nm" style="color: var(--priya)">Priya</span><span class="ti">9:37</span></div>
+                  <div class="typing"><i></i><i></i><i></i></div>
+                </div>
+              </div>
+            </div>
+            <div class="composer">
+              <div class="box">
+                <span style="flex: 1">Message the team…</span>
+                <svg class="ico" viewBox="0 0 24 24" stroke="var(--faint)" stroke-width="2" style="width: 16px; height: 16px"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z" /></svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- references -->
+          <div class="dock-body" id="dock-ref" style="display: none">
+            <div class="ref">
+              <div class="ref-search">
+                <svg class="ico" viewBox="0 0 24 24" stroke="currentColor"><circle cx="11" cy="11" r="7" /><path d="m21 21-4-4" /></svg>
+                Search references for T-03…
+              </div>
+              <div class="ref-card tagged">
+                <span class="ref-kind">Doc</span>
+                <div class="ref-t">Express middleware & the (req, res, next) contract</div>
+                <div class="ref-s">When to call next(), and how to short-circuit with a 401 without falling through.</div>
+              </div>
+              <div class="ref-card tagged">
+                <span class="ref-kind">API</span>
+                <div class="ref-t">jsonwebtoken v9 — verify() error types</div>
+                <div class="ref-s">TokenExpiredError vs JsonWebTokenError vs NotBeforeError — the distinct branches the checks look for.</div>
+              </div>
+              <div class="ref-card">
+                <span class="ref-kind">Snippet</span>
+                <div class="ref-t">Reusable bearer-token extraction</div>
+                <div class="ref-s">A typed AuthRequest and a guard you can attach to any router.</div>
+              </div>
+              <div style="font-size: 11px; color: var(--faint); margin-top: 12px; text-align: center">
+                Consulted 4 references · reading docs is expected engineering
+              </div>
+            </div>
+          </div>
+
+          <!-- activity (tiered) -->
+          <div class="dock-body" id="dock-act" style="display: none">
+            <div class="activity">
+              <div class="ev active">
+                <div class="rail"><div class="ed"></div><div class="ln2"></div></div>
+                <div class="et"><span class="who">Marcus</span> replied in the team channel <span class="time">· just now</span></div>
+              </div>
+              <div class="ev ambient">
+                <div class="rail"><div class="ed"></div><div class="ln2"></div></div>
+                <div class="et">Saved <span class="mono" style="font-size: 11px">auth.guard.ts</span> <span class="time">· 9:38</span></div>
+              </div>
+              <div class="ev ambient">
+                <div class="rail"><div class="ed"></div><div class="ln2"></div></div>
+                <div class="et">Checks ran — 2 of 4 signals passing <span class="time">· 9:38</span></div>
+              </div>
+              <div class="ev ambient">
+                <div class="rail"><div class="ed"></div><div class="ln2"></div></div>
+                <div class="et">Opened reference <span style="color: var(--ink)">jsonwebtoken v9</span> <span class="time">· 9:35</span></div>
+              </div>
+              <div class="ev ambient">
+                <div class="rail"><div class="ed"></div></div>
+                <div class="et">T-02 moved to Done <span class="time">· 9:21</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════ STATUS BAR ════ -->
+      <footer class="statusbar">
+        <span class="sb-item"><span class="sb-led"></span>Live · SSE connected</span>
+        <span class="sb-item mono" style="color: var(--faint)">sess_3a9f…c21</span>
+        <span class="sb-item">workspace</span>
+        <div style="flex: 1"></div>
+        <span class="sb-item">Sandbox warm · Postgres migrated</span>
+        <span class="sb-item mono" style="color: var(--faint)">src/middleware/auth.guard.ts</span>
+        <span class="sb-item">TypeScript</span>
+      </footer>
+    </div>
+
+    <!-- an 'active'-tier toast: the only thing louder is a standup -->
+    <div class="toast" id="toast">
+      <div class="th">
+        <span class="av" style="background: var(--james); width: 22px; height: 22px; font-size: 9px">JO</span>
+        <span class="nm">James · Reviewer</span>
+        <span class="tier">Active</span>
+      </div>
+      <p>Pairing offer: want me to look at the expired-token branch with you? You keep the keyboard.</p>
+      <div class="ta">
+        <button class="btn btn-blue btn-sm" style="padding: 6px 12px" onclick="document.getElementById('toast').style.display='none'">Accept</button>
+        <button class="btn btn-ghost btn-sm" style="padding: 6px 12px" onclick="document.getElementById('toast').style.display='none'">Not now</button>
+      </div>
+    </div>
+
+    <script>
+      /* ── editor content (T-03 auth guard, mid-edit) ── */
+      const CODE = [
+        ["import", " { Request, Response, NextFunction } ", "from", " 'express';"],
+        ["import", " jwt ", "from", " 'jsonwebtoken';"],
+        [],
+        ["export interface", " AuthRequest ", "extends", " Request {"],
+        ["  userId?: ", "string", ";"],
+        ["}"],
+        [],
+        ["cm", "// T-03 — reusable JWT bearer auth. 401 on missing/bad header,"],
+        ["cm", "// verify with JWT_SECRET, attach userId, distinct expired branch."],
+        ["export const", " authGuard = (req: AuthRequest, res: Response, next: NextFunction) => {"],
+        ["  const", " header = req.headers.authorization;"],
+        ["  if", " (!header || !header.", "fn", "startsWith", "('Bearer ')) {"],
+        ["    return", " res.", "fn", "status", "(", "nu", "401", ").json({ error: ", "st", "'NO_TOKEN'", " });"],
+        ["  }"],
+        ["  const", " token = header.", "fn", "slice", "(", "nu", "7", ");"],
+        ["  try", " {"],
+        ["    const", " payload = jwt.", "fn", "verify", "(token, process.env.JWT_SECRET!);"],
+        ["    req.userId = (payload ", "k", "as", " any).userId;"],
+        ["    return", " ", "fn", "next", "();"],
+        ["  } ", "k", "catch", " (err) {"],
+        ["    cm", "// TODO: branch TokenExpiredError -> distinct 401 TOKEN_EXPIRED"],
+        ["    return", " res.", "fn", "status", "(", "nu", "401", ").json({ error: ", "st", "'INVALID_TOKEN'", " });"],
+        ["  }"],
+        ["};"],
+      ];
+      // simple renderer: tokens are [class?, text, class?, text, ...] where a
+      // bare leading string is plain; known class names colour the next text.
+      const CLS = new Set(["k", "ty", "st", "nu", "fn", "cm", "pn"]);
+      const KW = ["import", "from", "export interface", "extends", "export const", "const", "if", "return", "try", "catch"];
+      function renderLine(parts) {
+        if (!parts.length) return "&nbsp;";
+        // whole-line comment
+        if (parts[0] === "cm") return `<span class="cm">${esc(parts[1])}</span>`;
+        let html = "";
+        for (let i = 0; i < parts.length; i++) {
+          let seg = parts[i];
+          if (CLS.has(seg)) {
+            html += `<span class="${seg}">${esc(parts[++i])}</span>`;
+          } else {
+            // colour leading keywords inside the segment
+            let s = esc(seg);
+            KW.forEach((kw) => {
+              s = s.replace(new RegExp("^(\\s*)(" + kw + ")\\b"), '$1<span class="k">$2</span>');
+            });
+            html += s;
+          }
+        }
+        return html;
+      }
+      function esc(s) {
+        return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+      }
+      document.getElementById("code").innerHTML = CODE.map(
+        (p, i) =>
+          `<div class="line"><span class="ln">${i + 1}</span><span class="cl">${renderLine(p)}</span></div>`,
+      ).join("");
+
+      /* ── dock tabs ── */
+      const docks = { chan: "dock-chan", ref: "dock-ref", act: "dock-act" };
+      document.querySelectorAll(".dock-tab").forEach((t) =>
+        t.addEventListener("click", () => {
+          document.querySelectorAll(".dock-tab").forEach((x) => x.classList.remove("on"));
+          t.classList.add("on");
+          const k = t.getAttribute("data-dock");
+          Object.entries(docks).forEach(([key, id]) => {
+            document.getElementById(id).style.display =
+              key === k ? (key === "chan" ? "flex" : "block") : "none";
+          });
+        }),
+      );
+
+      /* ── checks: queued -> result (mirrors async backend) ── */
+      const runBtn = document.getElementById("run-btn");
+      const reviewBtn = document.getElementById("review-btn");
+      runBtn.addEventListener("click", () => {
+        document.getElementById("tt-checks").click?.();
+        document.getElementById("running").style.display = "flex";
+        document.getElementById("check-idle").style.opacity = "0.4";
+        runBtn.disabled = true;
+        runBtn.innerHTML = '<span class="spinner" style="border-color: var(--line-3); border-top-color: var(--ink-2)"></span> Queued…';
+        setTimeout(() => {
+          document.getElementById("running").style.display = "none";
+          document.getElementById("check-idle").style.opacity = "1";
+          document.getElementById("check-idle").innerHTML =
+            '<span class="ok">✓ All 4 acceptance signals passing.</span><br />' +
+            '<span class="ok">✓ header-missing → 401 &nbsp; ✓ valid token attaches userId</span><br />' +
+            '<span class="ok">✓ tampered token → 401 INVALID_TOKEN &nbsp; ✓ expired → 401 TOKEN_EXPIRED</span><br />' +
+            '<span class="dim">Review unlocked — request James when you are ready.</span>';
+          runBtn.disabled = false;
+          runBtn.innerHTML =
+            '<svg class="ico" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M6 4l13 8-13 8z"/></svg> Re-run checks';
+          reviewBtn.disabled = false;
+          reviewBtn.removeAttribute("title");
+        }, 2100);
+      });
+
+      const tt1 = document.getElementById("tt-checks"),
+        tt2 = document.getElementById("tt-term");
+      tt1.addEventListener("click", () => {
+        tt1.classList.add("on");
+        tt2.classList.remove("on");
+      });
+      tt2.addEventListener("click", () => {
+        tt2.classList.add("on");
+        tt1.classList.remove("on");
+      });
+
+      /* dismiss toast after a while if untouched */
+      setTimeout(() => {
+        const t = document.getElementById("toast");
+        if (t) t.style.transition = "opacity .4s";
+      }, 200);
+    </script>
+  </body>
+</html>

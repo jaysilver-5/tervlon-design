@@ -3,8 +3,12 @@
 Two artifacts live here:
 
 - **`redesign.html` — the current design direction (start here).** A light-to-mid theme
-  keyed to the logo's blue gradient, with a reimagined, rail-driven layout and subtle
-  shimmer/spark accents. Built fresh (not a restyle) and growing in batches.
+  keyed to the logo's blue gradient, with a reimagined, rail-driven layout. Home + catalog;
+  its CTAs open the workspace. Built fresh (not a restyle) and growing in batches.
+- **`workspace.html` — the redesigned sprint room.** The full-bleed lived-in workspace
+  (board · editor · terminal/checks · team-dock) in the same light language, with the
+  backend's real mechanics modelled: action-gated buttons, async checks (queued → result),
+  review unlocked only after checks pass, and a tiered activity feed.
 - **`index.html` — the earlier full prototype.** A complete, backend-faithful React
   prototype covering every screen/flow on bundled fixtures. Kept as the reference for
   *behaviour* (the exact API surface, events, and gating) while the redesign re-imagines
@@ -44,8 +48,10 @@ What's in Batch 4 (`redesign.html`):
 
 ### Redesign roadmap (in this language, by batch)
 
-- **Batch 4 — Design system + shell + Home + Catalog** (this commit).
-- **Batch 5 — The workspace**, abstractly reimagined (board / editor / sandbox / panels).
+- **Batch 4 — Design system + shell + Home + Catalog.** ✓
+- **Craft pass** — discipline over decoration; gradient reserved, editorial structure. ✓
+- **Batch 5 — The workspace** (`workspace.html`): board / editor / terminal+checks / team
+  dock, grounded in the backend contract. ✓
 - **Batch 6 — The Sarah standup**, the headline moment, on its own accent.
 - **Batch 7 — The evidence-backed scorecard** (candidate + reviewer views).
 - **Batch 8 — Auth / onboarding / billing** and company/institution surfaces.
