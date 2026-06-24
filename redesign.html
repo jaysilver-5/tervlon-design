@@ -1,0 +1,1290 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tervlon — a day on a team</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300..700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* ════════════════════════════════════════════════════════════════
+         TERVLON — Redesign (Batch 4)
+         Light-to-mid theme keyed to the logo's sky→ocean blue gradient.
+         Reimagined layout: a calm rail-driven shell, a "your team is
+         mid-sprint" home, and a catalog that reads like sprint trading
+         cards. Subtle shimmer/spark accents for life. Colour is tunable
+         via the tokens below.
+         ════════════════════════════════════════════════════════════════ */
+      :root {
+        /* ── brand gradient, sampled from the logo (sky → ocean) ── */
+        --b1: #54c5ea; /* light top node  */
+        --b2: #2e8bce; /* mid connectors  */
+        --b3: #155fa0; /* deep bottom node */
+        --grad: linear-gradient(155deg, var(--b1) 0%, var(--b2) 48%, var(--b3) 100%);
+        --grad-soft: linear-gradient(155deg, #eaf6fd 0%, #dceffb 55%, #cfe6f7 100%);
+
+        /* ── primary action blue (a confident mid tone) ── */
+        --pri: #1e84c8;
+        --pri-h: #1773b4;
+        --pri-ink: #f7fbff;
+        --pri-wash: #e8f3fb;
+        --pri-line: #bfdcf0;
+
+        /* ── light-to-mid surfaces (never pure-white glare, never dark) ── */
+        --canvas: #eef4fa; /* app background        */
+        --surface: #ffffff; /* cards                 */
+        --surface-2: #f4f8fc; /* nested panels         */
+        --surface-3: #e9f1f8; /* wells / tracks        */
+        --rail: #f7fafd; /* left rail             */
+        --tint: #f0f7fd; /* faint blue tint block */
+
+        /* ── ink ramp (deep navy, not black) ── */
+        --ink: #102a40;
+        --ink-2: #355068;
+        --muted: #6783a0;
+        --faint: #95abc1;
+        --ghost: #b9c9d9;
+
+        /* ── lines ── */
+        --line: #e0eaf3;
+        --line-2: #d0deec;
+        --line-3: #c0d3e5;
+
+        /* ── status (on light) ── */
+        --ok: #16a06a;
+        --ok-wash: #e6f6ee;
+        --warn: #c9802a;
+        --warn-wash: #fbf1e3;
+        --err: #d8513f;
+        --err-wash: #fbeae6;
+
+        /* ── teammate identity (kept readable on light) ── */
+        --sarah: #6a5cf0; /* lead · standup accent */
+        --marcus: #1f9d72; /* senior dev */
+        --priya: #e07a4f; /* peer */
+        --james: #3a6fb0; /* reviewer */
+
+        /* ── elevation ── */
+        --sh-1: 0 1px 2px rgba(16, 42, 64, 0.04), 0 1px 3px rgba(16, 42, 64, 0.06);
+        --sh-2: 0 2px 6px rgba(16, 42, 64, 0.06), 0 8px 24px rgba(16, 42, 64, 0.08);
+        --sh-3: 0 12px 40px rgba(21, 95, 160, 0.16), 0 2px 8px rgba(16, 42, 64, 0.08);
+        --sh-brand: 0 10px 30px rgba(30, 132, 200, 0.28);
+
+        --serif: "Instrument Serif", Georgia, serif;
+        --mono: "JetBrains Mono", ui-monospace, monospace;
+        --sans: "DM Sans", system-ui, sans-serif;
+        --r-s: 9px;
+        --r-m: 14px;
+        --r-l: 20px;
+        --r-xl: 28px;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        font-family: var(--sans);
+        background: var(--canvas);
+        color: var(--ink);
+        font-size: 14px;
+        line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+      }
+      ::selection {
+        background: rgba(30, 132, 200, 0.18);
+      }
+      ::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--line-3);
+        border-radius: 99px;
+        border: 3px solid transparent;
+        background-clip: padding-box;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: var(--faint);
+        background-clip: padding-box;
+      }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+      button {
+        font-family: inherit;
+      }
+
+      /* ── motion ── */
+      @keyframes shimmer {
+        0% {
+          background-position: -200% 0;
+        }
+        100% {
+          background-position: 200% 0;
+        }
+      }
+      @keyframes sweep {
+        0% {
+          transform: translateX(-120%) skewX(-18deg);
+        }
+        60%,
+        100% {
+          transform: translateX(320%) skewX(-18deg);
+        }
+      }
+      @keyframes twinkle {
+        0%,
+        100% {
+          opacity: 0;
+          transform: scale(0.4);
+        }
+        50% {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+      @keyframes floaty {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-6px);
+        }
+      }
+      @keyframes rise {
+        from {
+          opacity: 0;
+          transform: translateY(14px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      @keyframes pulse-soft {
+        0% {
+          box-shadow: 0 0 0 0 rgba(30, 132, 200, 0.35);
+        }
+        70% {
+          box-shadow: 0 0 0 9px rgba(30, 132, 200, 0);
+        }
+        100% {
+          box-shadow: 0 0 0 0 rgba(30, 132, 200, 0);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          animation-duration: 0.001ms !important;
+          transition-duration: 0.001ms !important;
+        }
+      }
+      .rise {
+        animation: rise 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+      }
+      .stagger > * {
+        animation: rise 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+      }
+      .stagger > *:nth-child(1) {
+        animation-delay: 0.04s;
+      }
+      .stagger > *:nth-child(2) {
+        animation-delay: 0.1s;
+      }
+      .stagger > *:nth-child(3) {
+        animation-delay: 0.16s;
+      }
+      .stagger > *:nth-child(4) {
+        animation-delay: 0.22s;
+      }
+      .stagger > *:nth-child(5) {
+        animation-delay: 0.28s;
+      }
+      .stagger > *:nth-child(6) {
+        animation-delay: 0.34s;
+      }
+
+      /* ── shimmer + spark primitives ── */
+      .shimmer-text {
+        background: linear-gradient(
+          100deg,
+          var(--b3) 20%,
+          var(--b1) 38%,
+          #ffffff 50%,
+          var(--b1) 62%,
+          var(--b3) 80%
+        );
+        background-size: 200% auto;
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        animation: shimmer 5.5s linear infinite;
+      }
+      .sweep {
+        position: relative;
+        overflow: hidden;
+      }
+      .sweep::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 22%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.55),
+          transparent
+        );
+        transform: translateX(-120%) skewX(-18deg);
+        pointer-events: none;
+      }
+      .sweep:hover::after {
+        animation: sweep 0.9s ease;
+      }
+      .spark {
+        position: absolute;
+        width: 6px;
+        height: 6px;
+        pointer-events: none;
+        background:
+          radial-gradient(circle, #fff 0%, rgba(255, 255, 255, 0.8) 30%, transparent 60%);
+        filter: drop-shadow(0 0 4px rgba(124, 207, 255, 0.9));
+        animation: twinkle 3.4s ease-in-out infinite;
+      }
+      .spark.s2 {
+        animation-duration: 4.6s;
+        animation-delay: 1.1s;
+      }
+      .spark.s3 {
+        animation-duration: 3.9s;
+        animation-delay: 2.2s;
+      }
+
+      /* ── primitives ── */
+      .btn {
+        font-weight: 600;
+        font-size: 13.5px;
+        border: 1px solid transparent;
+        border-radius: var(--r-s);
+        padding: 10px 18px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        white-space: nowrap;
+        transition:
+          transform 0.14s,
+          box-shadow 0.2s,
+          background 0.16s,
+          border-color 0.16s,
+          color 0.16s;
+      }
+      .btn:active {
+        transform: translateY(0.5px) scale(0.99);
+      }
+      .btn-pri {
+        background: var(--grad);
+        color: var(--pri-ink);
+        box-shadow: var(--sh-brand);
+        background-size: 140% 140%;
+        background-position: 0% 50%;
+      }
+      .btn-pri:hover {
+        transform: translateY(-1.5px);
+        box-shadow: 0 14px 38px rgba(30, 132, 200, 0.36);
+        background-position: 100% 50%;
+      }
+      .btn-ghost {
+        background: var(--surface);
+        color: var(--ink-2);
+        border-color: var(--line-2);
+        box-shadow: var(--sh-1);
+      }
+      .btn-ghost:hover {
+        border-color: var(--pri-line);
+        color: var(--pri);
+        transform: translateY(-1px);
+      }
+      .btn-soft {
+        background: var(--pri-wash);
+        color: var(--pri);
+        border-color: var(--pri-line);
+      }
+      .btn-soft:hover {
+        background: #dcecfa;
+        transform: translateY(-1px);
+      }
+      .btn-sm {
+        padding: 7px 13px;
+        font-size: 12px;
+      }
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 11px;
+        font-weight: 600;
+        padding: 3px 9px;
+        border-radius: 99px;
+        letter-spacing: 0.01em;
+      }
+      .chip-line {
+        border: 1px solid var(--line-2);
+        color: var(--muted);
+        background: var(--surface);
+      }
+      .chip-blue {
+        background: var(--pri-wash);
+        color: var(--pri);
+        border: 1px solid var(--pri-line);
+      }
+      .chip-ok {
+        background: var(--ok-wash);
+        color: var(--ok);
+      }
+      .chip-warn {
+        background: var(--warn-wash);
+        color: var(--warn);
+      }
+      .kicker {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--pri);
+      }
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--r-l);
+        box-shadow: var(--sh-1);
+      }
+
+      /* ════════════ APP SHELL ════════════ */
+      .app {
+        display: grid;
+        grid-template-columns: 240px 1fr;
+        height: 100vh;
+        overflow: hidden;
+      }
+      .rail {
+        background: var(--rail);
+        border-right: 1px solid var(--line);
+        display: flex;
+        flex-direction: column;
+        padding: 18px 14px;
+        gap: 4px;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 6px 8px 18px;
+      }
+      .brand-logo {
+        width: 30px;
+        height: 30px;
+        flex-shrink: 0;
+      }
+      .brand-name {
+        font-size: 18px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        color: var(--ink);
+      }
+      .nav-group {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--faint);
+        padding: 16px 10px 6px;
+      }
+      .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        padding: 9px 11px;
+        border-radius: var(--r-s);
+        color: var(--ink-2);
+        font-size: 13.5px;
+        font-weight: 500;
+        cursor: pointer;
+        position: relative;
+        transition:
+          background 0.14s,
+          color 0.14s;
+      }
+      .nav-item svg {
+        width: 18px;
+        height: 18px;
+        flex-shrink: 0;
+        opacity: 0.85;
+      }
+      .nav-item:hover {
+        background: var(--surface-3);
+        color: var(--ink);
+      }
+      .nav-item.on {
+        background: var(--pri-wash);
+        color: var(--pri);
+        font-weight: 600;
+      }
+      .nav-item.on::before {
+        content: "";
+        position: absolute;
+        left: -14px;
+        top: 8px;
+        bottom: 8px;
+        width: 3px;
+        border-radius: 0 3px 3px 0;
+        background: var(--grad);
+      }
+      .nav-badge {
+        margin-left: auto;
+        font-size: 10px;
+        font-weight: 700;
+        background: var(--grad);
+        color: #fff;
+        padding: 1px 7px;
+        border-radius: 99px;
+      }
+      .rail-foot {
+        margin-top: auto;
+        border: 1px solid var(--line);
+        border-radius: var(--r-m);
+        background: var(--surface);
+        padding: 12px;
+      }
+
+      .main {
+        overflow-y: auto;
+        position: relative;
+      }
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        height: 64px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 0 32px;
+        background: rgba(238, 244, 250, 0.82);
+        backdrop-filter: blur(14px) saturate(1.3);
+        border-bottom: 1px solid var(--line);
+      }
+      .search {
+        flex: 1;
+        max-width: 440px;
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        background: var(--surface);
+        border: 1px solid var(--line-2);
+        border-radius: 99px;
+        padding: 9px 16px;
+        color: var(--muted);
+        font-size: 13px;
+        box-shadow: var(--sh-1);
+      }
+      .search svg {
+        width: 16px;
+        height: 16px;
+      }
+      .wallet {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--surface);
+        border: 1px solid var(--line-2);
+        border-radius: 99px;
+        padding: 7px 14px 7px 11px;
+        font-size: 12.5px;
+        font-weight: 600;
+        box-shadow: var(--sh-1);
+      }
+      .avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        color: #fff;
+        font-weight: 700;
+        font-size: 13px;
+        flex-shrink: 0;
+        box-shadow: var(--sh-1);
+      }
+      .page {
+        padding: 32px 32px 64px;
+        max-width: 1180px;
+      }
+
+      /* ════════════ HOME ════════════ */
+      .hero {
+        position: relative;
+        border-radius: var(--r-xl);
+        padding: 40px 44px;
+        color: #eaf6ff;
+        background: var(--grad);
+        overflow: hidden;
+        box-shadow: var(--sh-3);
+        isolation: isolate;
+      }
+      .hero::before {
+        /* glassy light streaks */
+        content: "";
+        position: absolute;
+        inset: 0;
+        background:
+          radial-gradient(60% 90% at 88% -10%, rgba(255, 255, 255, 0.35), transparent 60%),
+          radial-gradient(50% 80% at 8% 120%, rgba(7, 49, 92, 0.45), transparent 55%);
+        z-index: -1;
+      }
+      .hero-grid {
+        display: grid;
+        grid-template-columns: 1.5fr 1fr;
+        gap: 28px;
+        align-items: center;
+      }
+      .hero h1 {
+        font-size: 30px;
+        line-height: 1.18;
+        letter-spacing: -0.02em;
+        font-weight: 700;
+        margin: 14px 0 10px;
+      }
+      .hero h1 em {
+        font-family: var(--serif);
+        font-style: italic;
+        font-weight: 400;
+      }
+      .hero p {
+        color: rgba(234, 246, 255, 0.85);
+        font-size: 14.5px;
+        max-width: 46ch;
+        margin-bottom: 22px;
+      }
+      .hero .kicker {
+        color: rgba(255, 255, 255, 0.9);
+      }
+      .hero-actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .btn-on-grad {
+        background: #fff;
+        color: var(--pri);
+        box-shadow: 0 8px 24px rgba(8, 40, 72, 0.28);
+      }
+      .btn-on-grad:hover {
+        transform: translateY(-1.5px);
+      }
+      .btn-on-grad-ghost {
+        background: rgba(255, 255, 255, 0.12);
+        color: #fff;
+        border-color: rgba(255, 255, 255, 0.4);
+        backdrop-filter: blur(6px);
+      }
+      .btn-on-grad-ghost:hover {
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      /* resume card floating in the hero */
+      .resume {
+        background: rgba(255, 255, 255, 0.14);
+        border: 1px solid rgba(255, 255, 255, 0.28);
+        border-radius: var(--r-l);
+        padding: 20px;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 12px 40px rgba(8, 40, 72, 0.22);
+        animation: floaty 7s ease-in-out infinite;
+      }
+      .resume .rrow {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 14px;
+      }
+      .progress {
+        height: 7px;
+        border-radius: 99px;
+        background: rgba(255, 255, 255, 0.25);
+        overflow: hidden;
+        margin: 12px 0 6px;
+      }
+      .progress > i {
+        display: block;
+        height: 100%;
+        border-radius: 99px;
+        background: #fff;
+        box-shadow: 0 0 12px rgba(255, 255, 255, 0.7);
+      }
+
+      .section-head {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        margin: 36px 2px 16px;
+      }
+      .section-head h2 {
+        font-size: 19px;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+      }
+      .section-head a {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--pri);
+        cursor: pointer;
+      }
+
+      .stat-row {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+      }
+      .stat {
+        padding: 18px 20px;
+        position: relative;
+        overflow: hidden;
+      }
+      .stat .v {
+        font-size: 28px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        color: var(--ink);
+      }
+      .stat .l {
+        font-size: 12.5px;
+        color: var(--muted);
+        margin-top: 2px;
+      }
+      .stat .ic {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+        display: grid;
+        place-items: center;
+        background: var(--pri-wash);
+        color: var(--pri);
+      }
+      .stat .ic svg {
+        width: 18px;
+        height: 18px;
+      }
+
+      /* ════════════ CATALOG ════════════ */
+      .filter-row {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+      }
+      .pill {
+        font-size: 12.5px;
+        font-weight: 600;
+        padding: 7px 15px;
+        border-radius: 99px;
+        background: var(--surface);
+        border: 1px solid var(--line-2);
+        color: var(--ink-2);
+        cursor: pointer;
+        transition: all 0.14s;
+      }
+      .pill:hover {
+        border-color: var(--pri-line);
+      }
+      .pill.on {
+        background: var(--grad);
+        color: #fff;
+        border-color: transparent;
+        box-shadow: var(--sh-brand);
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 18px;
+      }
+      .sprint {
+        position: relative;
+        padding: 0;
+        overflow: hidden;
+        cursor: pointer;
+        transition:
+          transform 0.18s,
+          box-shadow 0.22s,
+          border-color 0.18s;
+      }
+      .sprint:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--sh-2);
+        border-color: var(--pri-line);
+      }
+      .sprint-top {
+        position: relative;
+        height: 92px;
+        background: var(--grad-soft);
+        overflow: hidden;
+        border-bottom: 1px solid var(--line);
+      }
+      .sprint-spine {
+        position: absolute;
+        left: 22px;
+        top: 22px;
+        bottom: 22px;
+        width: 4px;
+        border-radius: 4px;
+        background: var(--grad);
+        box-shadow: var(--sh-brand);
+      }
+      .sprint-track {
+        position: absolute;
+        top: 18px;
+        right: 18px;
+      }
+      .sprint-mono {
+        position: absolute;
+        left: 40px;
+        top: 20px;
+        font-family: var(--mono);
+        font-size: 11px;
+        color: var(--pri);
+        opacity: 0.65;
+      }
+      .sprint-body {
+        padding: 18px 20px 20px;
+      }
+      .sprint h3 {
+        font-size: 16px;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+        margin-bottom: 6px;
+      }
+      .sprint p {
+        font-size: 13px;
+        color: var(--muted);
+        line-height: 1.5;
+        margin-bottom: 14px;
+        min-height: 39px;
+      }
+      .sprint-foot {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 12px;
+        color: var(--muted);
+        padding-top: 14px;
+        border-top: 1px solid var(--line);
+      }
+      .sprint-foot .dotsep {
+        width: 3px;
+        height: 3px;
+        border-radius: 50%;
+        background: var(--ghost);
+      }
+      .team-mini {
+        display: flex;
+        margin-left: auto;
+      }
+      .team-mini .avatar {
+        width: 26px;
+        height: 26px;
+        font-size: 10px;
+        border: 2px solid var(--surface);
+        margin-left: -8px;
+      }
+
+      .level-dots {
+        display: inline-flex;
+        gap: 3px;
+        align-items: center;
+      }
+      .level-dots i {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--line-3);
+      }
+      .level-dots i.on {
+        background: var(--grad);
+      }
+
+      /* placeholder for next batches */
+      .soon {
+        margin-top: 28px;
+        border: 1.5px dashed var(--line-3);
+        border-radius: var(--r-l);
+        padding: 28px;
+        text-align: center;
+        color: var(--muted);
+        background: var(--surface-2);
+      }
+      .soon b {
+        color: var(--ink);
+      }
+
+      .footnote {
+        margin-top: 40px;
+        font-size: 12px;
+        color: var(--faint);
+        text-align: center;
+      }
+
+      @media (max-width: 900px) {
+        .app {
+          grid-template-columns: 1fr;
+        }
+        .rail {
+          display: none;
+        }
+        .hero-grid {
+          grid-template-columns: 1fr;
+        }
+        .stat-row {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <!-- ════════ LEFT RAIL ════════ -->
+      <aside class="rail">
+        <div class="brand">
+          <svg class="brand-logo" viewBox="0 0 100 100" aria-hidden="true">
+            <defs>
+              <linearGradient id="lg" x1="20%" y1="0%" x2="55%" y2="100%">
+                <stop offset="0%" stop-color="#54c5ea" />
+                <stop offset="52%" stop-color="#2e8bce" />
+                <stop offset="100%" stop-color="#155fa0" />
+              </linearGradient>
+            </defs>
+            <path
+              d="M50 64 L30 30"
+              stroke="url(#lg)"
+              stroke-width="10"
+              stroke-linecap="round"
+            />
+            <path
+              d="M50 64 L72 40"
+              stroke="url(#lg)"
+              stroke-width="8"
+              stroke-linecap="round"
+            />
+            <circle cx="30" cy="26" r="20" fill="url(#lg)" />
+            <circle cx="74" cy="38" r="11" fill="url(#lg)" />
+            <circle cx="50" cy="72" r="18" fill="url(#lg)" />
+          </svg>
+          <span class="brand-name">tervlon</span>
+        </div>
+
+        <div class="nav-item on">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 10.5 12 3l9 7.5" />
+            <path d="M5 9v11h14V9" />
+          </svg>
+          Home
+        </div>
+        <div class="nav-item" data-go="catalog">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="7" height="7" rx="1.5" />
+            <rect x="14" y="4" width="7" height="7" rx="1.5" />
+            <rect x="3" y="14" width="7" height="7" rx="1.5" />
+            <rect x="14" y="14" width="7" height="7" rx="1.5" />
+          </svg>
+          Sprint catalog
+        </div>
+        <div class="nav-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 3v18M3 7l9 5 9-5" />
+          </svg>
+          Active sprint
+          <span class="nav-badge">1</span>
+        </div>
+        <div class="nav-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 19V5a2 2 0 0 1 2-2h9l5 5v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z" />
+            <path d="M14 3v6h6" />
+          </svg>
+          My scorecards
+        </div>
+
+        <div class="nav-group">Workspace</div>
+        <div class="nav-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 6 4 12l5 6M15 6l5 6-5 6" />
+          </svg>
+          Sandbox
+        </div>
+        <div class="nav-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+          </svg>
+          Team channel
+        </div>
+
+        <div class="rail-foot">
+          <div style="display: flex; align-items: center; gap: 9px">
+            <div class="avatar" style="background: var(--grad); width: 30px; height: 30px">
+              JO
+            </div>
+            <div style="min-width: 0">
+              <div style="font-weight: 700; font-size: 13px">Joshua O.</div>
+              <div style="font-size: 11px; color: var(--muted)">Developer · Tier 1</div>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- ════════ MAIN ════════ -->
+      <main class="main">
+        <header class="topbar">
+          <div class="search">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="7" />
+              <path d="m21 21-4.3-4.3" />
+            </svg>
+            Search sprints, scorecards, references…
+          </div>
+          <div style="flex: 1"></div>
+          <div class="wallet">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="var(--pri)"
+              stroke-width="2"
+            >
+              <path d="M3 7h18v12H3z" />
+              <path d="M16 12h3" />
+            </svg>
+            8 credits
+          </div>
+          <div class="avatar" style="background: linear-gradient(150deg, #6a5cf0, #3a6fb0)">
+            JO
+          </div>
+        </header>
+
+        <!-- ════════ HOME VIEW ════════ -->
+        <section class="page" id="view-home">
+          <div class="hero rise">
+            <span class="spark" style="top: 18%; left: 30%"></span>
+            <span class="spark s2" style="top: 64%; left: 18%"></span>
+            <span class="spark s3" style="top: 30%; left: 70%"></span>
+            <div class="hero-grid">
+              <div>
+                <span class="kicker">Mid-sprint · Day 2</span>
+                <h1>Your team is already moving.<br /><em>Pick up where they left off.</em></h1>
+                <p>
+                  You joined the e-commerce squad mid-sprint. Two tickets are in your name, Sarah
+                  has a standup queued, and James is waiting to review. Real work, observed — not a
+                  quiz.
+                </p>
+                <div class="hero-actions">
+                  <button class="btn btn-on-grad sweep">
+                    Resume sprint
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2.2"
+                    >
+                      <path d="M5 12h14M13 6l6 6-6 6" />
+                    </svg>
+                  </button>
+                  <button class="btn btn-on-grad-ghost" data-go="catalog">Browse catalog</button>
+                </div>
+              </div>
+              <div class="resume">
+                <div class="rrow">
+                  <div class="avatar" style="background: var(--grad)">EC</div>
+                  <div>
+                    <div style="font-weight: 700">E-Commerce API Sprint</div>
+                    <div style="font-size: 12px; color: rgba(234, 246, 255, 0.8)">
+                      Backend · Mid · 5 tickets
+                    </div>
+                  </div>
+                </div>
+                <div style="font-size: 12.5px; color: rgba(234, 246, 255, 0.9)">
+                  T-03 · Auth middleware
+                </div>
+                <div class="progress"><i style="width: 46%"></i></div>
+                <div style="display: flex; justify-content: space-between; font-size: 11.5px; color: rgba(234, 246, 255, 0.8)">
+                  <span>2 of 5 tickets done</span><span>~38 min left</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-head">
+            <h2>Your signal so far</h2>
+            <a data-go="catalog">View scorecards →</a>
+          </div>
+          <div class="stat-row stagger">
+            <div class="card stat">
+              <div class="ic">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5" /></svg>
+              </div>
+              <div class="v">3</div>
+              <div class="l">Sprints completed</div>
+            </div>
+            <div class="card stat">
+              <div class="ic">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 4 7v6c0 5 3.5 7.5 8 9 4.5-1.5 8-4 8-9V7z" /></svg>
+              </div>
+              <div class="v">87<span style="font-size: 16px; color: var(--muted)">/100</span></div>
+              <div class="l">Avg. evidence score</div>
+            </div>
+            <div class="card stat">
+              <div class="ic">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l3 8 4-16 3 8h4" /></svg>
+              </div>
+              <div class="v">Clear</div>
+              <div class="l">Integrity band</div>
+            </div>
+            <div class="card stat">
+              <div class="ic">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4" /><path d="M4 21a8 8 0 0 1 16 0" /></svg>
+              </div>
+              <div class="v">2</div>
+              <div class="l">Featured for hiring</div>
+            </div>
+          </div>
+
+          <div class="section-head">
+            <h2>Recommended next</h2>
+            <a data-go="catalog">All sprints →</a>
+          </div>
+          <div class="grid" id="reco"></div>
+
+          <div class="soon">
+            <b>Next batches</b> — the reimagined workspace, the Sarah standup, and the
+            evidence-backed scorecard land in this same light-blue language. This screen sets the
+            direction; the palette is tunable from the tokens up top.
+          </div>
+          <div class="footnote">Tervlon — a day on a good team, observed. · Redesign Batch 4</div>
+        </section>
+
+        <!-- ════════ CATALOG VIEW ════════ -->
+        <section class="page" id="view-catalog" style="display: none">
+          <span class="kicker">Sprint catalog</span>
+          <h1 style="font-size: 26px; font-weight: 700; letter-spacing: -0.02em; margin: 8px 0 6px">
+            Pick a sprint. Join a team mid-flight.
+          </h1>
+          <p style="color: var(--muted); max-width: 60ch; margin-bottom: 22px">
+            Every sprint is a real codebase with hidden tests, curated references, and teammates who
+            speak in role. Junior runs 3 tickets and one standup; Mid runs 5 and two.
+          </p>
+          <div class="filter-row" id="filters"></div>
+          <div class="grid" id="catalog"></div>
+          <div class="footnote">Driven from the live catalog endpoint in the real client — never hardcoded.</div>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      /* ── data: mirrors the live scenario catalog ── */
+      const PEOPLE = {
+        sarah: { i: "SC", c: "#6a5cf0" },
+        marcus: { i: "MR", c: "#1f9d72" },
+        priya: { i: "PS", c: "#e07a4f" },
+        james: { i: "JO", c: "#3a6fb0" },
+      };
+      const SPRINTS = [
+        {
+          slug: "ecommerce-api-sprint",
+          title: "E-Commerce API Sprint",
+          track: "Backend",
+          level: 2,
+          mins: 75,
+          tickets: 5,
+          flag: true,
+          desc: "JWT auth middleware with distinct expired-vs-tampered handling, plus product CRUD with soft-delete filtering.",
+          team: ["sarah", "marcus", "priya"],
+        },
+        {
+          slug: "campaign-analytics-sprint",
+          title: "Campaign Analytics Sprint",
+          track: "Backend",
+          level: 1,
+          mins: 45,
+          tickets: 3,
+          desc: "Campaign event tracking and a performance-summary endpoint for a creator-commerce product.",
+          team: ["sarah", "marcus"],
+        },
+        {
+          slug: "checkout-form-sprint",
+          title: "Checkout Form Sprint",
+          track: "Frontend",
+          level: 1,
+          mins: 50,
+          tickets: 3,
+          desc: "Controlled checkout inputs, client-side validation with accessible errors, and an order summary.",
+          team: ["sarah", "priya"],
+        },
+        {
+          slug: "analytics-dashboard-sprint",
+          title: "Analytics Dashboard Sprint",
+          track: "Frontend",
+          level: 2,
+          mins: 80,
+          tickets: 5,
+          desc: "MetricCards, a data-fetching hook with cleanup, controlled filters, derived metrics, and keyboard a11y.",
+          team: ["sarah", "marcus", "priya"],
+        },
+        {
+          slug: "feature-flags-sprint",
+          title: "Feature Flags Sprint",
+          track: "Full-stack",
+          level: 2,
+          mins: 85,
+          tickets: 5,
+          desc: "Flag evaluation service, REST routes, parameterized Postgres persistence, and an optimistic toggle UI.",
+          team: ["sarah", "marcus", "priya"],
+        },
+        {
+          slug: "webhook-reliability-sprint",
+          title: "Webhook Reliability Sprint",
+          track: "Backend",
+          level: 2,
+          mins: 70,
+          tickets: 5,
+          desc: "Secure, idempotent webhook processing with retry — Marcus nudges on idempotency keys.",
+          team: ["sarah", "marcus"],
+        },
+        {
+          slug: "booking-availability-sprint",
+          title: "Booking Availability Sprint",
+          track: "Backend",
+          level: 2,
+          mins: 70,
+          tickets: 5,
+          desc: "Overlap prevention, cancellation rules, and schedule-safe state for a bookings service.",
+          team: ["sarah", "priya"],
+        },
+        {
+          slug: "wallet-ledger-sprint",
+          title: "Wallet Ledger Sprint",
+          track: "Backend",
+          level: 2,
+          mins: 75,
+          tickets: 5,
+          desc: "Idempotent balance changes and a derived-balance ledger that has to reconcile under retries.",
+          team: ["sarah", "marcus"],
+        },
+      ];
+      const trackColor = { Backend: "Backend", Frontend: "Frontend", "Full-stack": "Full-stack" };
+
+      const av = (k) =>
+        `<div class="avatar" title="${k}" style="background:${PEOPLE[k].c}">${PEOPLE[k].i}</div>`;
+      const levelDots = (n) =>
+        `<span class="level-dots">${[1, 2, 3]
+          .map((i) => `<i class="${i <= n ? "on" : ""}"></i>`)
+          .join("")}</span>`;
+
+      function sprintCard(s) {
+        return `
+        <div class="card sprint sweep" data-slug="${s.slug}">
+          <div class="sprint-top">
+            <div class="sprint-spine"></div>
+            <div class="sprint-mono">${s.slug}</div>
+            <div class="sprint-track"><span class="chip chip-blue">${s.track}</span></div>
+            ${s.flag ? '<span class="spark" style="top:24px;left:120px"></span>' : ""}
+          </div>
+          <div class="sprint-body">
+            <h3>${s.title}</h3>
+            <p>${s.desc}</p>
+            <div class="sprint-foot">
+              <span>${levelDots(s.level)} ${s.level === 1 ? "Junior" : "Mid"}</span>
+              <span class="dotsep"></span>
+              <span>${s.tickets} tickets</span>
+              <span class="dotsep"></span>
+              <span>~${s.mins}m</span>
+              <span class="team-mini">${s.team.map(av).join("")}</span>
+            </div>
+          </div>
+        </div>`;
+      }
+
+      document.getElementById("reco").innerHTML = SPRINTS.filter((s) =>
+        ["campaign-analytics-sprint", "feature-flags-sprint", "analytics-dashboard-sprint"].includes(
+          s.slug,
+        ),
+      )
+        .map(sprintCard)
+        .join("");
+
+      const tracks = ["All", "Backend", "Frontend", "Full-stack"];
+      let activeTrack = "All";
+      const renderFilters = () => {
+        document.getElementById("filters").innerHTML = tracks
+          .map((t) => `<button class="pill ${t === activeTrack ? "on" : ""}" data-track="${t}">${t}</button>`)
+          .join("");
+      };
+      const renderCatalog = () => {
+        const list = activeTrack === "All" ? SPRINTS : SPRINTS.filter((s) => s.track === activeTrack);
+        document.getElementById("catalog").innerHTML = list.map(sprintCard).join("");
+        const g = document.getElementById("catalog");
+        g.classList.remove("stagger");
+        void g.offsetWidth;
+        g.classList.add("stagger");
+      };
+      renderFilters();
+      renderCatalog();
+
+      /* ── interactions ── */
+      function go(view) {
+        document.getElementById("view-home").style.display = view === "home" ? "" : "none";
+        document.getElementById("view-catalog").style.display = view === "catalog" ? "" : "none";
+        document.querySelectorAll(".nav-item").forEach((n) => n.classList.remove("on"));
+        const navMap = { home: 0, catalog: 1 };
+        document.querySelectorAll(".nav-item")[navMap[view] ?? 0].classList.add("on");
+        document.querySelector(".main").scrollTo({ top: 0, behavior: "smooth" });
+      }
+      document.addEventListener("click", (e) => {
+        const goEl = e.target.closest("[data-go]");
+        if (goEl) {
+          go(goEl.getAttribute("data-go"));
+          return;
+        }
+        const nav = e.target.closest(".nav-item");
+        if (nav) {
+          const label = nav.textContent.trim();
+          if (label.startsWith("Home")) go("home");
+          else if (label.startsWith("Sprint catalog")) go("catalog");
+          return;
+        }
+        const pill = e.target.closest(".pill");
+        if (pill) {
+          activeTrack = pill.getAttribute("data-track");
+          renderFilters();
+          renderCatalog();
+        }
+      });
+    </script>
+  </body>
+</html>
