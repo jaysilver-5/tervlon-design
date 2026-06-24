@@ -502,6 +502,33 @@
       .integ { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 12px; background: var(--ok-tint); border: 1px solid #bfe6d2; }
       .integ .b { font-weight: 600; color: var(--ok); }
       .caveat { font-size: 11.5px; color: var(--muted); line-height: 1.55; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); }
+      /* scorecard view toggle */
+      .rep-toggle { display: inline-flex; gap: 2px; padding: 3px; background: var(--well); border: 1px solid var(--line); border-radius: 10px; }
+      .rep-toggle button { font-size: 12.5px; font-weight: 500; padding: 6px 14px; border-radius: 7px; border: none; background: transparent; color: var(--ink-2); display: inline-flex; align-items: center; gap: 6px; }
+      .rep-toggle button svg { width: 14px; height: 14px; stroke-width: 1.9; }
+      .rep-toggle button.on { background: var(--panel); color: var(--ink); font-weight: 560; box-shadow: var(--sh-1); }
+      .meta-strip { display: flex; gap: 0; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); margin: 18px 0 4px; box-shadow: var(--sh-1); overflow: hidden; }
+      .meta-strip .mc { padding: 12px 18px; border-right: 1px solid var(--line); }
+      .meta-strip .mc:last-child { border-right: none; }
+      .meta-strip .mk { font-size: 10.5px; color: var(--muted); font-weight: 500; }
+      .meta-strip .mv { font-size: 13px; font-weight: 560; margin-top: 2px; }
+      /* confidence band meter */
+      .band { margin-bottom: 4px; }
+      .band-track { height: 9px; border-radius: 99px; background: linear-gradient(90deg, #e9b4a8 0%, #ecd9a6 38%, #bfe3cf 60%, #a7dcc0 100%); position: relative; }
+      .band-track .mk2 { position: absolute; top: -4px; width: 4px; height: 17px; border-radius: 3px; background: var(--ink); box-shadow: 0 0 0 2px var(--panel); }
+      .band-scale { display: flex; justify-content: space-between; font-size: 10px; color: var(--faint); margin-top: 6px; }
+      /* integrity timeline */
+      .itl { position: relative; }
+      .itl .it { display: flex; gap: 11px; padding: 11px 0; border-bottom: 1px solid var(--line); }
+      .itl .it:last-child { border-bottom: none; }
+      .itl .ic2 { width: 26px; height: 26px; border-radius: 8px; display: grid; place-items: center; flex-shrink: 0; font-size: 12px; }
+      .itl .ic2.context { background: var(--well); color: var(--muted); }
+      .itl .ic2.signal { background: var(--ok-tint); color: var(--ok); }
+      .itl .ic2 svg { width: 14px; height: 14px; stroke-width: 2; }
+      .itl .itt { font-size: 12.5px; font-weight: 500; }
+      .itl .itn { font-size: 11.5px; color: var(--muted); line-height: 1.45; margin-top: 1px; }
+      .itl .itw { margin-left: auto; font-size: 10.5px; color: var(--faint); white-space: nowrap; }
+      .prov { font-family: var(--mono); font-size: 10.5px; color: var(--faint); margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); word-break: break-all; }
 
       .empty { padding: 60px 20px; text-align: center; color: var(--muted); }
       .empty .ei { width: 52px; height: 52px; border-radius: 14px; background: var(--blue-tint); color: var(--blue); display: grid; place-items: center; margin: 0 auto 16px; }
@@ -589,6 +616,20 @@
           { tag: "Refs", ex: "Consulted <b>4 references</b>, confirming jsonwebtoken v9 error types instead of guessing." },
           { tag: "Review", ex: "James: <b>“Clean separation. I'd merge this.”</b> Two minor naming notes." },
         ],
+        // company/reviewer-only: neutral evidence for a human to interpret — never an accusation
+        integrity: {
+          band: "clear", // clear >=80 · review_suggested >=55 · review_recommended <55
+          confidence: 92,
+          timeline: [
+            { kind: "context", t: "Pasted a 28-char snippet on T-03", note: "well within normal editing — not flagged", when: "9:31" },
+            { kind: "context", t: "Opened 4 references", note: "reading docs is expected engineering", when: "9:35" },
+            { kind: "signal", t: "Explained the expired-token branch in standup", note: "code and explanation matched — strong comprehension signal", when: "9:48" },
+            { kind: "context", t: "Two short focus-blur windows (~20s)", note: "neutral; no long absences", when: "9:52" },
+          ],
+        },
+        hiringNote: "Use this as one input among several. It evidences how the candidate works on real tickets — it does not rank them against a bar you haven't set.",
+        meta: { candidate: "Joshua Okonkwo", attempt: "att_7c41…9e", session: "sess_3a9f…c21", when: "Jun 24, 2026", duration: "1h 02m" },
+        provenance: "sha256:af31…be90 · evidence hash over 214 source events",
       };
 
       /* ════════════════ HELPERS ════════════════ */
@@ -625,6 +666,7 @@
         checks: "idle", // idle | running | passed
         reviewReq: false,
         reportReady: false,
+        repView: "candidate",
         termLines: [],
         termHist: [],
         histIdx: -1,
@@ -1006,37 +1048,75 @@
 
       /* ════════════════ SCORECARD ════════════════ */
       function viewScorecard() {
-        const r = REPORT;
-        const C = 2 * Math.PI * 46;
-        return shell("scorecard", `<section class="page fade" style="max-width:1000px">
-          <div class="crumb"><span class="c-link" data-route="home">Home</span>${svg('<path d="m9 6 6 6-6 6"/>', 13, 2)}<span style="color:var(--ink-2);font-weight:500">Scorecard · E-Commerce API Sprint</span></div>
-          <div class="report-hd">
-            <div class="score-ring"><svg width="104" height="104" style="transform:rotate(-90deg)"><circle cx="52" cy="52" r="46" fill="none" stroke="var(--well)" stroke-width="8"/><circle cx="52" cy="52" r="46" fill="none" stroke="url(#lgr)" stroke-width="8" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C * (1 - r.score / 100)}"/><defs><linearGradient id="lgr" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#56c6eb"/><stop offset="100%" stop-color="#155fa0"/></linearGradient></defs></svg><div class="n"><b class="tnum">${r.score}</b><s>Evidence</s></div></div>
-            <div style="flex:1">
+        const r = REPORT, C = 2 * Math.PI * 46;
+        const company = S.repView === "company";
+        const toggle = `<div class="rep-toggle">
+          <button class="${!company ? "on" : ""}" data-repview="candidate">${svg('<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>', 14, 1.9)} Candidate view</button>
+          <button class="${company ? "on" : ""}" data-repview="company">${svg('<path d="M3 21V8l6-4 6 4v13M9 21v-5h3v5M15 11h3v10"/>', 14, 1.9)} Company view</button>
+        </div>`;
+        const ring = `<div class="score-ring"><svg width="104" height="104" style="transform:rotate(-90deg)"><circle cx="52" cy="52" r="46" fill="none" stroke="var(--well)" stroke-width="8"/><circle cx="52" cy="52" r="46" fill="none" stroke="url(#lgr)" stroke-width="8" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C * (1 - r.score / 100)}"/><defs><linearGradient id="lgr" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#56c6eb"/><stop offset="100%" stop-color="#155fa0"/></linearGradient></defs></svg><div class="n"><b class="tnum">${r.score}</b><s>Evidence</s></div></div>`;
+        const dims = `<div class="panel"><div class="ph">Weighted dimensions</div>${r.dims.map((d) => `<div class="dim"><div class="dim-h"><b>${d.k}</b><span class="sc">${d.v}</span></div><div class="dim-bar"><i style="width:${d.v}%"></i></div></div>`).join("")}</div>`;
+        const evidence = `<div class="panel"><div class="ph">Per-moment evidence</div>${r.evidence.map((e) => `<div class="ev-row"><span class="tag">${e.tag}</span><div class="ex">${e.ex}</div></div>`).join("")}</div>`;
+
+        let body;
+        if (!company) {
+          body = `<div class="report-hd">${ring}<div style="flex:1">
               <span class="label" style="color:var(--blue-d)">Evidence-backed scorecard</span>
               <h1 class="display" style="font-size:24px;margin:8px 0 10px">How Joshua actually worked</h1>
               <p class="lead serif" style="font-size:17px;line-height:1.5;color:var(--ink-2)">${r.narrative}</p>
+            </div></div>
+            <div class="rep-grid">${evidence}
+              <div style="display:flex;flex-direction:column;gap:20px">${dims}
+                <div class="panel"><div class="ph">Integrity</div>
+                  <div class="integ">${svg(icon.shield, 18, 1.9).replace("currentColor", "var(--ok)")}<div><div class="b">Clear · ${r.integrity.confidence}</div><div style="font-size:11.5px;color:var(--muted)">Verified — nothing to flag</div></div></div>
+                  <div class="caveat">On your side, integrity shows as reassurance, never accusation. The detailed evidence is for reviewers.</div>
+                </div></div></div>`;
+        } else {
+          const band = r.integrity.confidence;
+          body = `<div class="meta-strip">
+              <div class="mc"><div class="mk">Candidate</div><div class="mv">${r.meta.candidate}</div></div>
+              <div class="mc"><div class="mk">Sprint</div><div class="mv">E-Commerce API · Mid</div></div>
+              <div class="mc"><div class="mk">Completed</div><div class="mv">${r.meta.when}</div></div>
+              <div class="mc"><div class="mk">Duration</div><div class="mv">${r.meta.duration}</div></div>
+              <div class="mc"><div class="mk">Attempt</div><div class="mv mono" style="font-weight:500">${r.meta.attempt}</div></div>
             </div>
-          </div>
-          <div class="rep-grid">
-            <div class="panel">
-              <div class="ph">Per-moment evidence</div>
-              ${r.evidence.map((e) => `<div class="ev-row"><span class="tag">${e.tag}</span><div class="ex">${e.ex}</div></div>`).join("")}
+            <div class="report-hd" style="margin-top:18px">${ring}<div style="flex:1">
+              <span class="label" style="color:var(--blue-d)">Hiring report · evidence for a human call</span>
+              <h1 class="display" style="font-size:24px;margin:8px 0 10px">How this candidate actually works</h1>
+              <p class="lead serif" style="font-size:16px;line-height:1.5;color:var(--ink-2)">${r.narrative}</p>
+            </div></div>
+            <div class="rep-grid">${evidence}
+              <div style="display:flex;flex-direction:column;gap:20px">${dims}</div>
             </div>
-            <div style="display:flex;flex-direction:column;gap:20px">
-              <div class="panel">
-                <div class="ph">Weighted dimensions</div>
-                ${r.dims.map((d) => `<div class="dim"><div class="dim-h"><b>${d.k}</b><span class="sc">${d.v}</span></div><div class="dim-bar"><i style="width:${d.v}%"></i></div></div>`).join("")}
+            <div class="panel" style="margin-top:20px">
+              <div class="ph">Integrity confidence — neutral evidence, you draw the conclusion</div>
+              <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px">
+                <div style="font-size:30px;font-weight:650;letter-spacing:-.03em" class="tnum">${band}</div>
+                <div style="flex:1">
+                  <div class="band"><div class="band-track"><div class="mk2" style="left:calc(${band}% - 2px)"></div></div>
+                    <div class="band-scale"><span>review recommended</span><span>review suggested</span><span>clear</span></div></div>
+                </div>
+                <span class="chip chip-ok" style="font-size:12px;padding:5px 12px">Band: clear</span>
               </div>
-              <div class="panel">
-                <div class="ph">Integrity</div>
-                <div class="integ">${svg(icon.shield, 18, 1.9).replace("currentColor", "var(--ok)")}<div><div class="b">Clear · 92</div><div style="font-size:11.5px;color:var(--muted)">Neutral evidence, human-interpreted</div></div></div>
-                <div class="caveat">This report supports a hiring decision; it does not replace one. Scores are evidence summaries — read the moments, not just the number.</div>
-              </div>
+              <div class="itl">${r.integrity.timeline.map(itlRow).join("")}</div>
+              <div class="prov">${r.provenance}</div>
             </div>
-          </div>
+            <div class="panel" style="margin-top:20px;background:var(--blue-tint);border-color:var(--blue-line)">
+              <div style="display:flex;gap:11px"><div style="flex-shrink:0">${svg('<circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/>', 20, 1.9).replace("currentColor", "var(--blue-d)")}</div>
+              <div><div style="font-weight:560;font-size:13px;color:var(--blue-d);margin-bottom:3px">How to read this</div><div style="font-size:12.5px;color:var(--ink-2);line-height:1.55">${r.hiringNote} There is no "pass/fail" or "cheater" state by design — the report supports your judgment, it does not replace it.</div></div></div>
+            </div>`;
+        }
+        return shell("scorecard", `<section class="page fade" style="max-width:1000px">
+          <div class="crumb"><span class="c-link" data-route="home">Home</span>${svg('<path d="m9 6 6 6-6 6"/>', 13, 2)}<span style="color:var(--ink-2);font-weight:500">Scorecard · E-Commerce API Sprint</span>
+            <div style="margin-left:auto">${toggle}</div></div>
+          ${body}
           <div class="footer"><span>Narrative first · the number is present, never the headline.</span><span><button class="btn btn-ghost btn-sm" data-route="workspace">Back to workspace</button></span></div>
         </section>`);
+      }
+      function itlRow(x) {
+        const isSig = x.kind === "signal";
+        const ic = isSig ? icon.check : '<path d="M12 8v4M12 16h.01"/><circle cx="12" cy="12" r="9"/>';
+        return `<div class="it"><div class="ic2 ${x.kind}">${svg(ic, 14, 2)}</div><div style="flex:1"><div style="display:flex"><div class="itt">${x.t}</div><div class="itw">${x.when}</div></div><div class="itn">${x.note}</div></div></div>`;
       }
 
       /* ════════════════ ROUTER ════════════════ */
@@ -1131,6 +1211,8 @@
         }
         const tab = e.target.closest(".tab");
         if (tab) { catTrack = tab.getAttribute("data-track"); render(); return; }
+        const rv = e.target.closest("[data-repview]");
+        if (rv) { S.repView = rv.getAttribute("data-repview"); render(); return; }
         const dt = e.target.closest(".dock-tab");
         if (dt) { S.dock = dt.getAttribute("data-dock"); document.querySelector(".col-dock").outerHTML = dock(); wireWorkspace(); return; }
         const tt = e.target.closest(".term-tab");
