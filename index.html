@@ -645,6 +645,30 @@
       .sk-n .s { font-size: 11.5px; color: var(--muted); margin-top: 1px; }
       .sk-row.empty .sk-n .t { color: var(--faint); }
       .sk-none { color: var(--faint); font-weight: 600; }
+      /* account menu (role is account-level, not a nav tab) */
+      .rail-acct { position: relative; }
+      .acct-menu { position: absolute; bottom: calc(100% + 8px); left: 0; right: 0; background: var(--panel); border: 1px solid var(--line-2); border-radius: 14px; box-shadow: var(--sh-pop); padding: 7px; z-index: 30; animation: rise .18s ease both; }
+      .am-h { display: flex; align-items: center; gap: 7px; font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--faint); padding: 7px 9px 5px; }
+      .am-demo { font-size: 8.5px; letter-spacing: 0.04em; color: var(--blue-d); background: var(--blue-tint); border: 1px solid var(--blue-line); padding: 0 5px; border-radius: 99px; }
+      .am-opt { display: flex; align-items: center; gap: 9px; padding: 8px 9px; border-radius: 9px; cursor: pointer; }
+      .am-opt:hover { background: var(--panel-2); }
+      .am-opt.on { background: var(--blue-tint); }
+      .am-ic { width: 26px; height: 26px; border-radius: 7px; display: grid; place-items: center; flex-shrink: 0; }
+      .amo-t { font-size: 12.5px; font-weight: 540; }
+      .amo-s { font-size: 10.5px; color: var(--muted); }
+      .am-tip { font-size: 10.5px; color: var(--faint); line-height: 1.45; padding: 7px 9px 4px; }
+      .am-sep { height: 1px; background: var(--line); margin: 6px 4px; }
+      .am-link { display: flex; align-items: center; gap: 9px; padding: 8px 9px; border-radius: 9px; font-size: 12.5px; color: var(--ink-2); cursor: pointer; }
+      .am-link:hover { background: var(--panel-2); color: var(--ink); }
+      .am-link svg { color: var(--muted); }
+      /* institution */
+      .cohort-card { display: flex; align-items: center; gap: 12px; padding: 11px 13px; border: 1px solid var(--line-2); border-radius: 12px; cursor: pointer; transition: border-color .14s, box-shadow .14s; }
+      .cohort-card:hover { border-color: var(--line-3); box-shadow: var(--sh-1); }
+      .cohort-bar { display: flex; align-items: center; gap: 8px; margin-top: 7px; font-size: 11px; color: var(--muted); }
+      .cb-track { flex: 1; max-width: 160px; height: 5px; border-radius: 99px; background: var(--well); overflow: hidden; }
+      .cb-track > i { display: block; height: 100%; border-radius: 99px; background: var(--grad); }
+      .cov-h { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; font-size: 12.5px; }
+      .auth-role { display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px; }
       /* persona switch */
       .persona { display: flex; align-items: center; gap: 9px; padding: 8px 9px; border-radius: 10px; border: 1px solid var(--line-2); background: var(--panel); cursor: pointer; margin-bottom: 6px; transition: border-color .14s, background .14s; }
       .persona:hover { border-color: var(--line-3); background: var(--panel-2); }
@@ -734,7 +758,7 @@
       .auth-tabs { display: flex; gap: 2px; padding: 3px; background: var(--well); border: 1px solid var(--line); border-radius: 11px; margin-bottom: 20px; }
       .at { flex: 1; font-size: 13px; font-weight: 500; padding: 8px; border-radius: 8px; border: none; background: transparent; color: var(--ink-2); }
       .at.on { background: var(--panel); color: var(--ink); font-weight: 560; box-shadow: var(--sh-1); }
-      .auth-role { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-bottom: 18px; }
+      .auth-role { display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px; }
       .role-opt { display: flex; align-items: center; gap: 9px; padding: 11px; border: 1px solid var(--line-2); border-radius: 11px; cursor: pointer; color: var(--ink-2); transition: border-color .14s, background .14s; }
       .role-opt:hover { border-color: var(--line-3); }
       .role-opt.on { border-color: var(--blue); background: var(--blue-tint); color: var(--blue-d); }
@@ -922,6 +946,30 @@
         ],
       };
 
+      // ── Institution / Academy (INSTITUTION_ADMIN). Rooted in /platform/institutions:
+      // dashboard { cohorts, analytics }, cohort { cohort, learners, attempts, analytics }.
+      // Doctrine: cohort learning signals, NOT a learner leaderboard.
+      const INSTITUTION = {
+        name: "Lagos Tech Academy",
+        stats: { cohorts: 3, learners: 64, verified: 41, completion: 78 },
+        cohorts: [
+          { id: "c1", name: "Backend Bootcamp · Fall", track: "Backend", status: "Active", learners: 24, completion: 82, avg: 79 },
+          { id: "c2", name: "Frontend Track · Fall", track: "Frontend", status: "Active", learners: 22, completion: 74, avg: 81 },
+          { id: "c3", name: "Full-stack · Spring", track: "Full-stack", status: "Completed", learners: 18, completion: 100, avg: 77 },
+        ],
+        coverage: [
+          { k: "Auth & security", v: 84 }, { k: "Data modelling", v: 72 }, { k: "API design", v: 80 }, { k: "Testing discipline", v: 65 }, { k: "Communication", v: 76 },
+        ],
+        learners: [
+          { name: "Joshua Okonkwo", track: "Backend", status: "Completed", score: 88, band: "clear" },
+          { name: "Amara Eze", track: "Backend", status: "Completed", score: 81, band: "review_suggested" },
+          { name: "Chioma Okafor", track: "Backend", status: "Completed", score: 85, band: "clear" },
+          { name: "Tunde Bello", track: "Backend", status: "In sprint", score: null, band: null },
+          { name: "Sofia Rossi", track: "Backend", status: "Completed", score: 76, band: "review_recommended" },
+          { name: "David Mensah", track: "Backend", status: "Not started", score: null, band: null },
+        ],
+      };
+
       /* ════════════════ HELPERS ════════════════ */
       const av = (k, sz, extra = "") =>
         `<span class="av${extra ? " " + extra : ""}" title="${PEOPLE[k].name}" style="background:${PEOPLE[k].c};width:${sz}px;height:${sz}px;font-size:${Math.round(sz * 0.36)}px">${PEOPLE[k].i}</span>`;
@@ -945,6 +993,10 @@
         users: '<path d="M16 19a4 4 0 0 0-8 0"/><circle cx="12" cy="9" r="3.2"/><path d="M21 18a3 3 0 0 0-4-2.6M18 10.6A2.6 2.6 0 0 0 18 5.5"/>',
         plus: '<path d="M12 5v14M5 12h14"/>',
         copy: '<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/>',
+        wallet: '<rect x="3" y="6" width="18" height="13" rx="2.5"/><path d="M3 10h18M16 14h2"/>',
+        cap: '<path d="M3 9l9-4 9 4-9 4-9-4z"/><path d="M7 11v4c0 1 2.2 2 5 2s5-1 5-2v-4"/>',
+        dev: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+        bldg: '<path d="M3 21V8l6-4 6 4v13M9 21v-5h3v5M15 11h3v6"/>',
       };
       const svg = (p, w = 18, sw = 1.85) =>
         `<svg class="ico" viewBox="0 0 24 24" stroke="currentColor" stroke-width="${sw}" style="width:${w}px;height:${w}px">${p}</svg>`;
@@ -952,7 +1004,8 @@
 
       /* ════════════════ STATE ════════════════ */
       const S = {
-        persona: "developer", // developer | company
+        persona: "developer", // developer | company | institution — set at auth/onboarding, switched from the account menu (not nav tabs)
+        acctOpen: false,
         region: "TIER_1",
         route: "home",
         dock: "board",
@@ -969,37 +1022,47 @@
       };
 
       /* ════════════════ SHELL ════════════════ */
+      const PERSONAS = {
+        developer: { ic: "dev", c: "var(--blue)", who: "Joshua O.", role: "Developer · Tier 1", av: () => av("you", 30), sec: "Develop", home: "home", desc: "Your sprints & credential" },
+        company: { ic: "bldg", c: "var(--marcus)", who: "Northwind", role: "Company · admin", av: () => `<span class="av" style="background:var(--marcus);width:30px;height:30px;font-size:11px">NW</span>`, sec: "Hiring", home: "company", desc: "Assess & hire candidates" },
+        institution: { ic: "cap", c: "var(--sarah)", who: "Lagos Tech Academy", role: "Institution · admin", av: () => `<span class="av" style="background:var(--sarah);width:30px;height:30px;font-size:11px">LA</span>`, sec: "Academy", home: "institution", desc: "Verify cohort skills" },
+      };
+      const homeRoute = () => PERSONAS[S.persona].home;
       function rail(active) {
-        const co = S.persona === "company";
+        const p = S.persona, P = PERSONAS[p];
         const item = (id, ic, label, badge, route) =>
           `<div class="nav ${active === (route || id) ? "on" : ""}" data-route="${route || id}">${svg(icon[ic], 17)}${label}${badge ? `<span class="nav-badge">${badge}</span>` : ""}</div>`;
-        const persona = `<div class="persona" data-persona-toggle title="Switch role (demo)">
-            <span class="persona-ic" style="background:${co ? "var(--marcus)" : "var(--blue)"}">${svg(co ? '<path d="M3 21V8l6-4 6 4v13M9 21v-5h3v5M15 11h3v6"/>' : '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>', 16, 2).replace("currentColor", "#fff")}</span>
-            <div style="flex:1;min-width:0;line-height:1.3"><div class="pn">${co ? "Northwind" : "Joshua O."}</div><div class="ps">${co ? "Hiring · Company" : "Developer"}</div></div>
-            ${svg('<path d="m8 9 4-4 4 4M8 15l4 4 4-4"/>', 14, 2).replace("currentColor", "var(--faint)")}
-          </div>`;
-        const devNav = `
-          ${item("home", "home", "Home")}
-          ${item("catalog", "grid", "Sprint catalog")}
-          <div class="nav ${active === "workspace" ? "on" : ""}" data-route="workspace">${svg(icon.shield, 17)}Active sprint<span class="nav-live" title="A sprint is running"></span></div>
-          ${item("scorecard", "file", "Scorecards")}`;
-        const coNav = `
-          ${item("company", "home", "Dashboard")}
-          ${item("reviewboard", "users", "Review board", String(COMPANY.stats.needsReview))}
-          ${item("assessments", "grid", "Assessments")}
-          ${item("catalog", "book", "Scenario catalog")}`;
-        const signout = `<span class="rail-out" data-route="auth" title="Sign out">${svg('<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>', 15, 1.9).replace("currentColor", "var(--faint)")}</span>`;
-        const foot = co
-          ? `<div class="rail-foot" title="Company account"><span class="av" style="background:var(--marcus);width:30px;height:30px;font-size:11px">NW</span><div style="min-width:0;line-height:1.35;flex:1"><div style="font-weight:560;font-size:13px">Northwind</div><div style="font-size:11px;color:var(--muted)">Company · admin</div></div>${signout}</div>`
-          : `<div class="rail-foot" data-route="profile" title="Your profile — the credential">${av("you", 30)}<div style="min-width:0;line-height:1.35;flex:1"><div style="font-weight:560;font-size:13px">Joshua O.</div><div style="font-size:11px;color:var(--muted)">Developer · Tier 1</div></div>${signout}</div>`;
+        const navs = {
+          developer: `${item("home", "home", "Home")}${item("catalog", "grid", "Sprint catalog")}<div class="nav ${active === "workspace" ? "on" : ""}" data-route="workspace">${svg(icon.shield, 17)}Active sprint<span class="nav-live" title="A sprint is running"></span></div>${item("scorecard", "file", "Scorecards")}${item("billing", "wallet", "Plans & credits")}`,
+          company: `${item("company", "home", "Dashboard")}${item("reviewboard", "users", "Review board", String(COMPANY.stats.needsReview))}${item("assessments", "grid", "Assessments")}${item("catalog", "book", "Scenario catalog")}`,
+          institution: `${item("institution", "home", "Dashboard")}${item("cohort", "users", "Cohorts")}${item("institution", "pulse", "Analytics", null, "institution")}${item("catalog", "book", "Scenario catalog")}`,
+        };
         return `<aside class="rail">
-          <div class="brand" data-route="${co ? "company" : "home"}"><span class="brand-mark">${LOGO}</span><span class="brand-name">Tervlon</span></div>
-          ${persona}
-          <div class="nav-sec" style="padding-top:8px">${co ? "Hiring" : "Develop"}</div>
-          ${co ? coNav : devNav}
+          <div class="brand" data-route="${P.home}"><span class="brand-mark">${LOGO}</span><span class="brand-name">Tervlon</span></div>
+          <div class="nav-sec" style="padding-top:4px">${P.sec}</div>
+          ${navs[p]}
           <div style="flex:1"></div>
-          ${foot}
+          <div class="rail-acct">
+            ${S.acctOpen ? accountMenu() : ""}
+            <div class="rail-foot" data-account-toggle title="Account">
+              ${P.av()}
+              <div style="min-width:0;line-height:1.35;flex:1"><div style="font-weight:560;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${P.who}</div><div style="font-size:11px;color:var(--muted)">${P.role}</div></div>
+              ${svg('<path d="m8 9 4-4 4 4M8 15l4 4 4-4"/>', 14, 2).replace("currentColor", "var(--faint)")}
+            </div>
+          </div>
         </aside>`;
+      }
+      function accountMenu() {
+        const p = S.persona;
+        const opt = (id) => { const P = PERSONAS[id]; return `<div class="am-opt ${p === id ? "on" : ""}" data-set-persona="${id}"><span class="am-ic" style="background:${P.c}">${svg(icon[P.ic], 14, 2).replace("currentColor", "#fff")}</span><div style="flex:1;min-width:0"><div class="amo-t">${id[0].toUpperCase() + id.slice(1)}</div><div class="amo-s">${P.desc}</div></div>${p === id ? svg(icon.check, 14, 2.6).replace("currentColor", "var(--blue)") : ""}</div>`; };
+        return `<div class="acct-menu">
+          <div class="am-h">Switch view <span class="am-demo">demo</span></div>
+          ${["developer", "company", "institution"].map(opt).join("")}
+          <div class="am-tip">Your role is set at sign-up; switch it from here or your profile — not the nav.</div>
+          <div class="am-sep"></div>
+          ${p === "developer" ? `<div class="am-link" data-route="profile">${svg(icon.dev, 15, 1.9)} Profile</div><div class="am-link" data-route="billing">${svg(icon.wallet, 15, 1.9)} Plans & credits</div>` : ""}
+          <div class="am-link" data-route="auth">${svg('<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>', 15, 1.9)} Sign out</div>
+        </div>`;
       }
       function topbar() {
         return `<header class="topbar">
@@ -1468,8 +1531,9 @@
       }
       function viewScorecard() {
         const r = REPORT, C = 2 * Math.PI * 50;
-        // Candidate view for developers; company/reviewer view under the Company role.
-        const company = S.persona === "company";
+        // Candidate view for developers; detailed reviewer view (evidence timeline +
+        // integrity band) for company & institution roles.
+        const company = S.persona !== "developer";
         const toggle = "";
         const ring = `<div class="score-ring"><svg width="112" height="112" style="transform:rotate(-90deg)"><circle cx="56" cy="56" r="50" fill="none" stroke="var(--well)" stroke-width="8"/><circle cx="56" cy="56" r="50" fill="none" stroke="url(#lgr)" stroke-width="8" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C * (1 - r.score / 100)}"/><defs><linearGradient id="lgr" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#56c6eb"/><stop offset="100%" stop-color="#155fa0"/></linearGradient></defs></svg><div class="n"><b class="tnum">${r.score}</b><s>Evidence</s></div></div>`;
         const dims = `<div class="panel"><div class="ph">Weighted dimensions</div>${r.dims.map((d) => `<div class="dim"><div class="dim-h"><b>${d.k}</b><span class="sc">${d.v}</span></div><div class="dim-bar"><i style="width:${d.v}%"></i></div></div>`).join("")}</div>`;
@@ -1552,9 +1616,12 @@
               <div><div style="font-weight:560;font-size:13px;color:var(--blue-d);margin-bottom:3px">How to read this</div><div style="font-size:12.5px;color:var(--ink-2);line-height:1.55">${r.hiringNote} There is no "pass/fail" or "cheater" state by design — the report supports your judgment, it does not replace it.</div></div></div>
             </div>`;
         }
-        const crumb = company
-          ? `<span class="c-link" data-route="company">Dashboard</span>${svg('<path d="m9 6 6 6-6 6"/>', 13, 2)}<span class="c-link" data-route="reviewboard">Review board</span>${svg('<path d="m9 6 6 6-6 6"/>', 13, 2)}<span style="color:var(--ink-2);font-weight:500">${r.meta.candidate}</span>`
-          : `<span class="c-link" data-route="home">Home</span>${svg('<path d="m9 6 6 6-6 6"/>', 13, 2)}<span class="c-link" data-route="scorecard">Scorecards</span>${svg('<path d="m9 6 6 6-6 6"/>', 13, 2)}<span style="color:var(--ink-2);font-weight:500">E-Commerce API Sprint</span>`;
+        const arrow = svg('<path d="m9 6 6 6-6 6"/>', 13, 2);
+        const crumb = S.persona === "institution"
+          ? `<span class="c-link" data-route="institution">Dashboard</span>${arrow}<span class="c-link" data-route="cohort">Cohort</span>${arrow}<span style="color:var(--ink-2);font-weight:500">${r.meta.candidate}</span>`
+          : S.persona === "company"
+          ? `<span class="c-link" data-route="company">Dashboard</span>${arrow}<span class="c-link" data-route="reviewboard">Review board</span>${arrow}<span style="color:var(--ink-2);font-weight:500">${r.meta.candidate}</span>`
+          : `<span class="c-link" data-route="home">Home</span>${arrow}<span class="c-link" data-route="scorecard">Scorecards</span>${arrow}<span style="color:var(--ink-2);font-weight:500">E-Commerce API Sprint</span>`;
         return shell("scorecard", `<section class="page fade" style="max-width:1160px">
           <div class="crumb">${crumb}
             <div style="margin-left:auto;display:flex;gap:8px">${toggle}<button class="btn btn-ghost btn-sm">${svg('<path d="M12 3v12M7 10l5 5 5-5M5 21h14"/>', 14, 2)} Export PDF</button></div></div>
@@ -1681,6 +1748,45 @@
         </section>`);
       }
 
+      /* ════════════════ INSTITUTION / ACADEMY ════════════════ */
+      function viewInstitution() {
+        const I = INSTITUTION;
+        const stat = (v, l, suf) => `<div class="sg"><div class="k">${l}</div><div class="v tnum">${v}${suf || ""}</div></div>`;
+        const cohort = (c) => `<div class="cohort-card" data-route="cohort">
+            <div class="av" style="background:${TRACK_C[c.track]};width:38px;height:38px;font-size:12px">${c.track[0]}</div>
+            <div style="flex:1;min-width:0"><div style="font-weight:540;font-size:13.5px">${c.name}</div><div style="font-size:11.5px;color:var(--muted)">${c.learners} learners · ${c.track}</div>
+              <div class="cohort-bar"><div class="cb-track"><i style="width:${c.completion}%"></i></div><span>${c.completion}% complete</span></div></div>
+            <div style="text-align:right;flex-shrink:0"><div style="font-size:16px;font-weight:600" class="tnum">${c.avg}</div><div style="font-size:10px;color:var(--faint)">avg</div></div>${statusChip(c.status)}</div>`;
+        const cov = (x) => `<div class="cov"><div class="cov-h"><span>${x.k}</span><span class="tnum" style="font-weight:600">${x.v}</span></div><div class="dim-bar"><i style="width:${x.v}%"></i></div></div>`;
+        return shell("institution", `<section class="page fade">
+          <div class="greet"><div><span class="label" style="color:var(--sarah)">Cohort skill verification</span><h1 class="display">${I.name}</h1></div>
+            <div class="greet-r"><button class="btn btn-ghost btn-sm" data-route="cohort">${svg(icon.users, 14, 2)} Cohorts</button><button class="btn btn-pri btn-sm" data-modal="create">${svg(icon.plus, 14, 2.2)} New cohort assessment</button></div></div>
+          <div class="signal rise" style="margin-top:24px">${stat(I.stats.cohorts, "Cohorts")}${stat(I.stats.learners, "Learners")}${stat(I.stats.verified, "Skills verified")}${stat(I.stats.completion, "Avg completion", "%")}</div>
+          <div class="dash-grid" style="grid-template-columns:1.5fr 1fr;margin-top:24px">
+            <div class="pnl rise"><div class="pnl-h"><div class="t">Cohorts</div><span class="link" data-route="cohort">All cohorts</span></div>
+              <div style="padding:8px 16px 14px;display:flex;flex-direction:column;gap:10px">${I.cohorts.map(cohort).join("")}</div></div>
+            <div class="pnl rise"><div class="pnl-h"><div class="t">Skill coverage</div><div class="x">Where the cohort is strong / thin</div></div>
+              <div style="padding:14px 18px 18px;display:flex;flex-direction:column;gap:14px">${I.coverage.map(cov).join("")}</div></div>
+          </div>
+          <div class="footer"><span>Cohort learning signals — never a learner leaderboard.</span><span>Institution · ${I.name}</span></div>
+        </section>`);
+      }
+      function viewCohort() {
+        const I = INSTITUTION, c = I.cohorts[0];
+        const row = (l) => `<tr ${l.status === "Completed" ? "data-open-report" : ""}>
+          <td><div style="display:flex;align-items:center;gap:10px"><span class="av" style="background:${TRACK_C[l.track]};width:30px;height:30px;font-size:11px">${l.name.split(" ").map((x) => x[0]).join("")}</span><span class="ht2">${l.name}</span></div></td>
+          <td>${statusChip(l.status)}</td><td class="hs">${l.score != null ? l.score : "—"}</td><td>${bandPill(l.band)}</td>
+          <td style="text-align:right">${l.status === "Completed" ? `<span class="link" style="font-size:12.5px" data-open-report>View evidence →</span>` : `<span style="color:var(--faint);font-size:12px">—</span>`}</td></tr>`;
+        return shell("cohort", `<section class="page fade" style="max-width:1080px">
+          <div class="crumb"><span class="c-link" data-route="institution">Dashboard</span>${svg('<path d="m9 6 6 6-6 6"/>', 13, 2)}<span style="color:var(--ink-2);font-weight:500">${c.name}</span></div>
+          <div class="greet" style="margin-bottom:16px"><div><h1 class="display" style="font-size:25px">${c.name}</h1>
+            <div style="display:flex;gap:16px;margin-top:8px;font-size:12.5px;color:var(--muted)"><span><b style="color:var(--ink)">${c.learners}</b> learners</span><span><b style="color:var(--ink)">${c.completion}%</b> complete</span><span><b style="color:var(--ink)">${c.avg}</b> avg evidence</span><span>${statusChip(c.status)}</span></div></div>
+            <div class="greet-r"><button class="btn btn-pri btn-sm" data-modal="invite" data-as="${c.name}">${svg(icon.plus, 14, 2.2)} Add learners</button></div></div>
+          <div class="pnl"><table class="htab"><thead><tr><th>Learner</th><th>Status</th><th>Score</th><th>Integrity</th><th></th></tr></thead><tbody>${I.learners.map(row).join("")}</tbody></table></div>
+          <div class="footer"><span>Open a learner's evidence to coach — the report shows what they can and can't yet do.</span><span>${I.learners.length} learners</span></div>
+        </section>`);
+      }
+
       /* ════════════════ AUTH + INVITE (front door) ════════════════ */
       function viewAuth() {
         const bullet = (t) => `<div class="auth-b">${svg(icon.check, 14, 2.6).replace("currentColor", "#fff")}<span>${t}</span></div>`;
@@ -1697,8 +1803,9 @@
           <div class="auth-pane">
             <div class="auth-card">
               <div class="auth-tabs"><button class="at on" data-auth-tab="in">Sign in</button><button class="at" data-auth-tab="up">Create account</button></div>
-              <div class="auth-role"><div class="role-opt on" data-auth-role="developer">${svg('<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>', 16, 1.9)}<div><div class="ro-t">Developer</div><div class="ro-s">Practice & get verified</div></div></div>
-                <div class="role-opt" data-auth-role="company">${svg('<path d="M3 21V8l6-4 6 4v13M9 21v-5h3v5M15 11h3v6"/>', 16, 1.9)}<div><div class="ro-t">Company</div><div class="ro-s">Assess candidates</div></div></div></div>
+              <div class="auth-role"><div class="role-opt on" data-auth-role="developer">${svg(icon.dev, 16, 1.9)}<div><div class="ro-t">Developer</div><div class="ro-s">Practice & get verified</div></div></div>
+                <div class="role-opt" data-auth-role="company">${svg(icon.bldg, 16, 1.9)}<div><div class="ro-t">Company</div><div class="ro-s">Assess & hire candidates</div></div></div>
+                <div class="role-opt" data-auth-role="institution">${svg(icon.cap, 16, 1.9)}<div><div class="ro-t">Institution</div><div class="ro-s">Verify cohort skills</div></div></div></div>
               <label class="fld-l">Work email</label><input class="fld" placeholder="you@email.com" value=""/>
               <label class="fld-l" style="margin-top:13px">Password</label><input class="fld" type="password" placeholder="••••••••"/>
               <button class="btn btn-pri" data-auth-go style="width:100%;margin-top:18px;padding:11px">Continue ${svg(icon.arrow, 15, 2.1)}</button>
@@ -1770,7 +1877,7 @@
       }
 
       /* ════════════════ ROUTER ════════════════ */
-      const VIEWS = { home: viewHome, catalog: viewCatalog, workspace: viewWorkspace, scorecard: viewScorecard, profile: viewProfile, company: viewCompany, reviewboard: viewReviewboard, assessments: viewAssessments, auth: viewAuth, invite: viewInvite, billing: viewBilling };
+      const VIEWS = { home: viewHome, catalog: viewCatalog, workspace: viewWorkspace, scorecard: viewScorecard, profile: viewProfile, company: viewCompany, reviewboard: viewReviewboard, assessments: viewAssessments, auth: viewAuth, invite: viewInvite, billing: viewBilling, institution: viewInstitution, cohort: viewCohort };
       function render() {
         const root = document.getElementById("root");
         root.innerHTML = (VIEWS[S.route] || viewHome)();
@@ -1804,6 +1911,7 @@
       function stopStandupCountdown() { if (sdTimer) { clearInterval(sdTimer); sdTimer = null; } }
       function nav(route, opts = {}) {
         if (opts.dock) S.dock = opts.dock;
+        S.acctOpen = false;
         S.route = route;
         location.hash = "#/" + route;
         render();
@@ -1944,10 +2052,11 @@
       document.addEventListener("click", (e) => {
         const mo = e.target.closest(".mention-opt");
         if (mo) return pickMention(mo.getAttribute("data-mk"));
-        if (e.target.closest("[data-persona-toggle]")) {
-          S.persona = S.persona === "company" ? "developer" : "company";
-          return nav(S.persona === "company" ? "company" : "home");
-        }
+        // account menu (account-level role switch — not a nav tab)
+        if (S.acctOpen && !e.target.closest(".rail-acct")) { S.acctOpen = false; render(); return; }
+        if (e.target.closest("[data-account-toggle]")) { S.acctOpen = !S.acctOpen; render(); return; }
+        const sp = e.target.closest("[data-set-persona]");
+        if (sp) { S.persona = sp.getAttribute("data-set-persona"); S.acctOpen = false; return nav(homeRoute()); }
         if (e.target.closest("[data-open-report]")) return nav("scorecard");
         const md = e.target.closest("[data-modal]");
         if (md && !md.disabled) return openModal(md.getAttribute("data-modal"), md.getAttribute("data-as"));
@@ -1969,8 +2078,9 @@
         if (at) { document.querySelectorAll(".at").forEach((x) => x.classList.remove("on")); at.classList.add("on"); return; }
         if (e.target.closest("[data-auth-go]")) {
           const sel = document.querySelector(".role-opt.on");
-          S.persona = sel && sel.getAttribute("data-auth-role") === "company" ? "company" : "developer";
-          return nav(S.persona === "company" ? "company" : "home");
+          const role = sel ? sel.getAttribute("data-auth-role") : "developer";
+          S.persona = PERSONAS[role] ? role : "developer";
+          return nav(homeRoute());
         }
         const rv = e.target.closest("[data-repview]");
         if (rv) { S.repView = rv.getAttribute("data-repview"); render(); return; }
