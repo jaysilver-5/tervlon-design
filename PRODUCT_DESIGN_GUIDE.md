@@ -1,5 +1,9 @@
 # Tervlon — Product Design Guide & Execution Priority
 
+> **Visual polish addendum (premium pass)** — see §7 at the bottom for the design
+> diagnosis, what changed, the logo question, and the optional larger moves.
+
+
 A working review of `index.html` (the design preview) against the Frontend Engineering
 Document, the reference PDF, and a direct read of the NestJS backend source. It answers four
 things you asked: should the codebase be decentralised, what the tier fix is, how pricing /
@@ -244,3 +248,54 @@ controllers directly; Appendix A of the engineering doc matches the source.
 assembles one from existing fields today; the safe addition is optional `ticket.brief`
 (markdown) via `SoftwareTicketRun.scenarioSnapshot`. Nothing else in the priority list is
 blocked by a missing backend capability.
+
+---
+
+## 7. Visual polish — diagnosis, rethink, and what changed
+
+The system is high-craft already (disciplined tokens, deliberate type, restrained shadow). So
+"off / not premium" was not the whole thing — it was a few specific tells. Diagnosis and the
+pass applied:
+
+### Diagnosis
+1. **Animated wordmark.** "Tervlon" used a gradient-fill text with a `sheen` shimmer that
+   animated on load. Animated gradient wordmarks are the strongest "SaaS-template" tell;
+   premium brands keep the wordmark static and confident and let the *mark* carry colour.
+2. **Teammate colours read like a crayon box.** Sarah violet / Marcus acid-green / Priya
+   neon-orange / James bright-blue — four high-saturation hues spread across the wheel against a
+   cool, refined blue brand. Priya's orange clashed hardest; James's blue sat too close to the
+   brand blue.
+3. **The gradient wasn't reserved.** The README states the discipline (gradient = the logo, the
+   one continue card, the score ring, a whisper of hover). But the small *data bars* (scorecard
+   dimensions, cohort progress) rendered in the full cyan→navy rainbow. Rainbow data bars cheapen
+   the look and dilute the focal gradient.
+
+### What changed (in `index.html`)
+- **Wordmark → solid ink, no animation.** The logo mark stays the one coloured brand element;
+  the wordmark is now confident and still. (Removed the gradient text-clip + `sheen` animation.)
+- **Teammate palette harmonised** into one slightly-desaturated editorial register, all still
+  distinct and clear of teal: Marcus `#178a64 → #2f8568` (softer emerald), Priya
+  `#cf6f3e → #bf6a4a` (clay, not neon), James `#3d6fa8 → #4b6691` (slate-indigo, distinct from
+  brand blue). Sarah's violet is kept as the signature standup accent that should pop.
+- **Gradient reserved.** Data bars (`.dim-bar`, `.cb-track`) moved from the full `--grad`
+  rainbow to a single-hue blue depth (`blue → blue-d`). The full sky-to-ocean gradient now
+  appears only on true focal moments — the mark, the continue/resume card, the auth panel, the
+  score ring.
+
+### The logo
+The node-graph mark in the Sky-to-Ocean gradient is on-brand and works — keep it. It reads as a
+"connected team / graph," which fits the product. Two optional refinements if you want to push
+it (brand decision, not done here): (a) give it a single flat-colour lockup variant for small
+sizes / favicons where the gradient muddies; (b) tighten the stroke weights so the three nodes
+feel more like one system than three separate dots. No redesign needed unless you want one.
+
+### Optional larger moves (your call — not applied)
+- **Tighten the focal-card count to one per screen.** Home is already disciplined (one continue
+  card). Audit other screens so two gradient blocks never compete in one viewport.
+- **A subtle "paper" elevation system.** Current shadows are good; a premium step is a 3-tier
+  shadow scale (resting / hover / overlay) applied consistently so depth always means the same
+  thing.
+- **Editorial serif used more intentionally.** Instrument Serif appears in the greeting; using
+  it for one display moment per screen (and nowhere else) reads more premium than scattering it.
+- **Motion budget.** Keep the entrance `rise`, but consider dropping per-element stagger on
+  dense list views — calm beats choreographed at this altitude.
