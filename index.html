@@ -752,6 +752,43 @@
       .ilm .k { font-size: 10.5px; color: var(--muted); }
       .ilm .v { font-size: 14px; font-weight: 600; margin-top: 2px; }
       @media (max-width: 760px) { .auth { grid-template-columns: 1fr; } .auth-brand { display: none; } }
+
+      /* billing */
+      .region-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+      .rg { font-size: 12px; font-weight: 500; padding: 7px 13px; border-radius: 99px; border: 1px solid var(--line-2); background: var(--panel); color: var(--ink-2); }
+      .rg:hover { border-color: var(--line-3); }
+      .rg.on { background: var(--ink); color: #fff; border-color: var(--ink); }
+      .plan-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+      .plan { position: relative; background: var(--panel); border: 1px solid var(--line-2); border-radius: 16px; padding: 22px; box-shadow: var(--sh-1); display: flex; flex-direction: column; }
+      .plan.pop { border-color: var(--blue); box-shadow: 0 0 0 1px var(--blue-line), var(--sh-2); }
+      .plan-pop { position: absolute; top: -10px; left: 22px; font-size: 10px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: #fff; background: var(--grad); padding: 3px 10px; border-radius: 99px; box-shadow: var(--sh-brand); }
+      .plan-n { font-size: 15px; font-weight: 600; letter-spacing: -0.01em; }
+      .plan-blurb { font-size: 12.5px; color: var(--muted); margin-top: 2px; }
+      .plan-price { margin: 14px 0 2px; display: flex; align-items: baseline; gap: 5px; }
+      .plan-price b { font-size: 30px; font-weight: 650; letter-spacing: -0.03em; }
+      .plan-price span { font-size: 12.5px; color: var(--muted); }
+      .plan-credits { font-size: 12px; font-weight: 540; color: var(--blue-d); margin-bottom: 14px; }
+      .plan-feats { display: flex; flex-direction: column; gap: 8px; font-size: 12.5px; color: var(--ink-2); margin-bottom: 18px; flex: 1; }
+      .plan-feats > div { display: flex; align-items: center; gap: 8px; }
+      .plan-unconf { font-size: 11px; color: var(--warn); margin-top: 8px; text-align: center; }
+      .wallet-card { border-radius: 16px; padding: 20px; color: #eaf5fd; background: var(--grad); box-shadow: var(--sh-blue); }
+      .wallet-card .wc-k { font-size: 10.5px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,.82); }
+      .wallet-card .wc-v { font-size: 17px; margin: 8px 0 2px; }
+      .wallet-card .wc-v b { font-size: 32px; font-weight: 650; letter-spacing: -0.03em; }
+      .wallet-card .wc-s { font-size: 12px; color: rgba(234,245,253,.82); margin-bottom: 14px; }
+      .wallet-card .btn-pri { background: #fff; color: var(--blue-d); }
+      .led { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--line); }
+      .led:last-child { border-bottom: none; }
+      .led-t { font-size: 12.5px; font-weight: 500; }
+      .led-w { font-size: 11px; color: var(--faint); }
+      .led-d { font-variant-numeric: tabular-nums; font-weight: 600; font-size: 13px; }
+      .led-d.pos { color: var(--ok); } .led-d.neg { color: var(--ink-2); }
+      .co-line { display: flex; justify-content: space-between; align-items: center; padding: 9px 0; border-bottom: 1px solid var(--line); font-size: 13px; }
+      .co-line:first-child { padding-top: 0; }
+      .co-paddle { display: flex; gap: 9px; font-size: 12px; color: var(--ink-2); line-height: 1.5; background: var(--blue-tint); border: 1px solid var(--blue-line); border-radius: 10px; padding: 10px 12px; margin-top: 14px; }
+      .co-paddle svg { flex-shrink: 0; }
+      .co-unconf, .co-success { text-align: center; padding: 16px 8px; }
+      @media (max-width: 980px) { .plan-grid { grid-template-columns: 1fr; } }
     </style>
   </head>
   <body>
@@ -857,6 +894,32 @@
         provenance: "sha256:af31…be90 · evidence hash over 214 source events",
       };
 
+      // ── Billing (Paddle, credits, region tiers). Rooted in /platform/billing/*:
+      // plans, plans/:slug/quote?regionTier, checkout { paddlePriceId, amount,
+      // creditGrant, configured }, owners/:t/:id/wallets + ledger. Access is
+      // credit-based — never a hardcoded dollar gate.
+      const BILLING = {
+        wallet: { credits: 8, unlimited: false },
+        regions: [
+          { id: "TIER_1", label: "Tier 1 · NA / EU", mult: 1 },
+          { id: "TIER_2", label: "Tier 2 · LatAm / EE", mult: 0.7 },
+          { id: "TIER_3", label: "Tier 3 · S. Asia / Africa", mult: 0.5 },
+          { id: "TIER_4", label: "Tier 4 · subsidised", mult: 0.35 },
+        ],
+        plans: [
+          { slug: "payg-mid", name: "Pay as you go", kind: "PAYG", base: 12, credits: 1, blurb: "One sprint + its scorecard", features: ["1 sprint credit", "Full evidence report", "Pin to your profile"], cta: "Buy 1 credit", configured: true },
+          { slug: "starter", name: "Starter", kind: "sub", base: 29, credits: 5, period: "mo", blurb: "5 sprints / month", features: ["5 credits monthly", "All tracks & levels", "Verified scorecards"], cta: "Subscribe", configured: true },
+          { slug: "pro", name: "Pro", kind: "sub", base: 59, credits: 15, period: "mo", blurb: "15 sprints / month", features: ["15 credits monthly", "Priority runners", "Profile analytics"], cta: "Subscribe", popular: true, configured: true },
+          { slug: "unlimited", name: "Unlimited", kind: "sub", base: 99, credits: null, period: "mo", blurb: "Unlimited sprints", features: ["Unlimited credits", "Everything in Pro", "Early-access scenarios"], cta: "Subscribe", configured: false },
+        ],
+        ledger: [
+          { t: "Sprint started · E-Commerce API", d: "−1", when: "May 12", neg: true },
+          { t: "Starter subscription grant", d: "+5", when: "May 1" },
+          { t: "Refund · runner failure", d: "+1", when: "Apr 28" },
+          { t: "Pay-as-you-go top-up", d: "+3", when: "Apr 9" },
+        ],
+      };
+
       /* ════════════════ HELPERS ════════════════ */
       const av = (k, sz, extra = "") =>
         `<span class="av${extra ? " " + extra : ""}" title="${PEOPLE[k].name}" style="background:${PEOPLE[k].c};width:${sz}px;height:${sz}px;font-size:${Math.round(sz * 0.36)}px">${PEOPLE[k].i}</span>`;
@@ -888,6 +951,7 @@
       /* ════════════════ STATE ════════════════ */
       const S = {
         persona: "developer", // developer | company
+        region: "TIER_1",
         route: "home",
         dock: "board",
         term: "terminal",
@@ -939,7 +1003,7 @@
         return `<header class="topbar">
           <div class="search">${svg(icon.search, 15, 2)} Search <span class="kbd">⌘K</span></div>
           <div style="flex:1"></div>
-          <div class="credits">${svg('<rect x="3" y="6" width="18" height="12" rx="2.5"/><path d="M3 10h18"/>', 16, 1.9).replace("currentColor", "var(--blue)")} <b>8</b> credits</div>
+          <div class="credits" data-route="billing" style="cursor:pointer">${svg('<rect x="3" y="6" width="18" height="12" rx="2.5"/><path d="M3 10h18"/>', 16, 1.9).replace("currentColor", "var(--blue)")} <b>${BILLING.wallet.unlimited ? "∞" : BILLING.wallet.credits}</b> credits</div>
           <button class="tb-btn">${svg(icon.bell, 17, 1.9)}</button>
           ${av("you", 36)}
         </header>`;
@@ -1664,8 +1728,47 @@
         </div>`;
       }
 
+      /* ════════════════ BILLING ════════════════ */
+      const region = () => BILLING.regions.find((r) => r.id === S.region) || BILLING.regions[0];
+      const price = (base) => "$" + Math.round(base * region().mult);
+      function viewBilling() {
+        const w = BILLING.wallet;
+        const planCard = (p) => `<div class="plan ${p.popular ? "pop" : ""}">
+            ${p.popular ? '<div class="plan-pop">Most popular</div>' : ""}
+            <div class="plan-n">${p.name}</div><div class="plan-blurb">${p.blurb}</div>
+            <div class="plan-price">${p.kind === "PAYG" ? `<b>${price(p.base)}</b><span>/ credit</span>` : `<b>${price(p.base)}</b><span>/ ${p.period}</span>`}</div>
+            <div class="plan-credits">${p.credits == null ? "Unlimited credits" : p.credits + " credit" + (p.credits > 1 ? "s" : "") + (p.kind === "sub" ? " / mo" : "")}</div>
+            <div class="plan-feats">${p.features.map((f) => `<div>${svg(icon.check, 13, 2.6).replace("currentColor", "var(--ok)")} ${f}</div>`).join("")}</div>
+            <button class="btn ${p.popular ? "btn-pri" : "btn-ghost"}" style="width:100%" data-modal="checkout" data-as="${p.slug}">${p.cta}</button>
+            ${p.configured ? "" : '<div class="plan-unconf">Paddle price not configured</div>'}
+          </div>`;
+        return shell("billing", `<section class="page fade" style="max-width:1160px">
+          <div class="crumb"><span class="c-link" data-route="home">Home</span>${svg('<path d="m9 6 6 6-6 6"/>', 13, 2)}<span style="color:var(--ink-2);font-weight:500">Plans & credits</span></div>
+          <div class="dash-grid" style="grid-template-columns:1fr 320px;align-items:start">
+            <div>
+              <div class="greet" style="margin-bottom:14px"><div><h1 class="display" style="font-size:26px">Plans & credits</h1><p class="lead" style="margin-top:6px">Runtime access is credit-based — a sprint consumes one credit. Pricing is region-aware; the processor is Paddle.</p></div></div>
+              <div class="region-row">${BILLING.regions.map((r) => `<button class="rg ${r.id === S.region ? "on" : ""}" data-region="${r.id}">${r.label}</button>`).join("")}</div>
+              <div class="plan-grid">${BILLING.plans.map(planCard).join("")}</div>
+              <div class="footer" style="margin-top:30px"><span>Prices and Paddle ids are editable catalog data — changing them never touches the runtime.</span></div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:18px">
+              <div class="wallet-card">
+                <div class="wc-k">Your wallet</div>
+                <div class="wc-v"><b class="tnum">${w.unlimited ? "∞" : w.credits}</b> credits</div>
+                <div class="wc-s">Each credit runs one sprint and its scorecard.</div>
+                <button class="btn btn-pri btn-sm" style="width:100%;margin-top:6px" data-modal="checkout" data-as="pro">Top up</button>
+              </div>
+              <div class="pnl">
+                <div class="pnl-h"><div class="t">Recent ledger</div></div>
+                <div style="padding:6px 16px 12px">${BILLING.ledger.map((l) => `<div class="led"><div style="flex:1;min-width:0"><div class="led-t">${l.t}</div><div class="led-w">${l.when}</div></div><div class="led-d ${l.neg ? "neg" : "pos"}">${l.d}</div></div>`).join("")}</div>
+              </div>
+            </div>
+          </div>
+        </section>`);
+      }
+
       /* ════════════════ ROUTER ════════════════ */
-      const VIEWS = { home: viewHome, catalog: viewCatalog, workspace: viewWorkspace, scorecard: viewScorecard, profile: viewProfile, company: viewCompany, reviewboard: viewReviewboard, assessments: viewAssessments, auth: viewAuth, invite: viewInvite };
+      const VIEWS = { home: viewHome, catalog: viewCatalog, workspace: viewWorkspace, scorecard: viewScorecard, profile: viewProfile, company: viewCompany, reviewboard: viewReviewboard, assessments: viewAssessments, auth: viewAuth, invite: viewInvite, billing: viewBilling };
       function render() {
         const root = document.getElementById("root");
         root.innerHTML = (VIEWS[S.route] || viewHome)();
@@ -1713,6 +1816,34 @@
       function openModal(kind, ctx) {
         if (document.getElementById("modal-layer")) return;
         let inner = "";
+        if (kind === "checkout") {
+          const p = BILLING.plans.find((x) => x.slug === ctx) || BILLING.plans[0];
+          const amount = price(p.base);
+          if (!p.configured) {
+            inner = `<div class="modal"><div class="modal-h"><div><div class="mt">${p.name}</div><div class="ms">Checkout</div></div><button class="modal-x" data-modal-close>${svg('<path d="M6 6l12 12M18 6 6 18"/>', 16, 2)}</button></div>
+              <div class="modal-b"><div class="co-unconf">${svg('<path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 2 18a2 2 0 0 0 1.7 3h16.6a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/>', 26, 1.8).replace("currentColor", "var(--warn)")}<div style="font-weight:600;margin-top:10px">Billing not configured</div><div style="font-size:12.5px;color:var(--muted);margin-top:4px">This plan has no Paddle price id yet. The price row exists; an admin sets the id per deployment — a data edit, not a code change.</div></div></div>
+              <div class="modal-f"><button class="btn btn-ghost" data-modal-close>Close</button></div></div>`;
+          } else {
+            inner = `<div class="modal"><div class="modal-h"><div><div class="mt">${p.name}</div><div class="ms">Secure checkout · Paddle</div></div><button class="modal-x" data-modal-close>${svg('<path d="M6 6l12 12M18 6 6 18"/>', 16, 2)}</button></div>
+              <div class="modal-b">
+                <div class="co-line"><span>${p.kind === "PAYG" ? "1 credit" : p.name + " · monthly"}</span><span class="tnum" style="font-weight:600">${amount}${p.kind === "sub" ? " / mo" : ""}</span></div>
+                <div class="co-line"><span style="color:var(--muted)">Credits granted</span><span style="font-weight:540">${p.credits == null ? "Unlimited" : "+" + p.credits}</span></div>
+                <div class="co-line"><span style="color:var(--muted)">Region</span><span>${region().label}</span></div>
+                <div class="co-paddle">${svg('<rect x="3" y="6" width="18" height="12" rx="2.5"/><path d="M3 10h18"/>', 18, 1.9).replace("currentColor", "var(--blue)")} Card handled by Paddle — Tervlon never sees it. On success the webhook grants credits and your wallet updates.</div>
+                <button class="btn btn-pri" id="pay-btn" style="width:100%;margin-top:14px;padding:11px">Pay ${amount} with Paddle</button>
+              </div></div>`;
+          }
+          const layer = document.createElement("div");
+          layer.className = "modal-layer"; layer.id = "modal-layer"; layer.innerHTML = inner;
+          layer.addEventListener("click", (ev) => { if (ev.target === layer) layer.remove(); });
+          document.getElementById("root").appendChild(layer);
+          const pay = document.getElementById("pay-btn");
+          if (pay) pay.addEventListener("click", () => {
+            if (p.credits != null) BILLING.wallet.credits += p.credits; else BILLING.wallet.unlimited = true;
+            layer.querySelector(".modal-b").innerHTML = `<div class="co-success">${svg(icon.check, 30, 2.4).replace("currentColor", "var(--ok)")}<div style="font-weight:600;margin-top:10px">Payment complete</div><div style="font-size:12.5px;color:var(--muted);margin-top:4px">Webhook verified · ${p.credits == null ? "wallet set to unlimited" : "+" + p.credits + " credits"}. You can start a sprint now.</div><button class="btn btn-pri btn-sm" style="margin-top:16px" data-modal-close>Done</button></div>`;
+          });
+          return;
+        }
         if (kind === "invite") {
           const token = "inv_" + Math.random().toString(36).slice(2, 10);
           const url = `https://app.tervlon.com/invite/${token}`;
@@ -1830,6 +1961,8 @@
         if (scn) { scn.parentElement.querySelectorAll(".scn").forEach((x) => x.classList.remove("on")); scn.classList.add("on"); return; }
         const ro = e.target.closest(".role-opt");
         if (ro) { document.querySelectorAll(".role-opt").forEach((x) => x.classList.remove("on")); ro.classList.add("on"); return; }
+        const rg = e.target.closest("[data-region]");
+        if (rg) { S.region = rg.getAttribute("data-region"); render(); return; }
         const at = e.target.closest("[data-auth-tab]");
         if (at) { document.querySelectorAll(".at").forEach((x) => x.classList.remove("on")); at.classList.add("on"); return; }
         if (e.target.closest("[data-auth-go]")) {
