@@ -519,10 +519,34 @@
       .si-actions { display: flex; flex-direction: column; gap: 8px; margin-top: 18px; }
       .si-sub { font-size: 10px; color: var(--faint); margin-top: 9px; }
 
-      .meet { display: grid; grid-template-rows: 56px 1fr; height: 100vh; background: var(--bg); }
-      .meet-top { display: flex; align-items: center; gap: 12px; padding: 0 20px; background: var(--panel); border-bottom: 1px solid var(--line); }
-      .meet-body { display: grid; grid-template-columns: 1fr 420px; min-height: 0; }
-      .stage { padding: 22px; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 14px; min-height: 0; background: linear-gradient(180deg, var(--panel-2), var(--bg)); }
+      /* the standup is a minimizable modal over the (preserved) workspace */
+      .meet-layer { position: fixed; inset: 0; z-index: 70; display: grid; place-items: center; background: rgba(12,18,30,.46); backdrop-filter: blur(9px); transition: background .35s, backdrop-filter .35s; animation: fade .3s ease; }
+      .meet-layer.minimized { background: transparent; backdrop-filter: none; pointer-events: none; place-items: end; padding: 20px; }
+      .meet-modal { width: min(960px, 94vw); height: min(620px, 86vh); background: var(--panel); border: 1px solid var(--line-2); border-radius: 20px; box-shadow: var(--sh-pop); display: flex; flex-direction: column; overflow: hidden; animation: rise .5s cubic-bezier(.16,1,.3,1) both; }
+      .meet-layer.minimized .meet-modal { display: none; }
+      .meet-head { height: 60px; flex-shrink: 0; display: flex; align-items: center; gap: 12px; padding: 0 18px; border-bottom: 1px solid var(--line); background: linear-gradient(180deg, var(--sarah-tint), var(--panel)); }
+      .mh-av { position: relative; }
+      .mh-av .breath { position: absolute; inset: -5px; border-radius: 50%; animation: breath 2.6s ease-in-out infinite; }
+      @keyframes breath { 0%,100% { box-shadow: 0 0 0 2px rgba(106,95,214,.24); } 50% { box-shadow: 0 0 0 6px rgba(106,95,214,.08); } }
+      .mh-id .t { font-size: 14px; font-weight: 600; letter-spacing: -0.02em; }
+      .mh-id .s { font-size: 11px; color: var(--muted); }
+      .mh-live { display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; color: var(--muted); }
+      .mh-ctrl { width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--line-2); background: var(--panel); display: grid; place-items: center; color: var(--ink-2); }
+      .mh-ctrl:hover { border-color: var(--line-3); color: var(--ink); }
+      .mh-ctrl svg { width: 16px; height: 16px; stroke-width: 2.2; }
+      .meet-content { flex: 1; display: grid; grid-template-columns: 1fr 372px; min-height: 0; }
+      .stage { padding: 20px; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 14px; min-height: 0; background: linear-gradient(180deg, var(--panel-2), var(--bg)); }
+      /* minimized pill */
+      .meet-pill { display: none; align-items: center; gap: 11px; width: 300px; padding: 11px 13px; background: var(--panel); border: 1px solid var(--sarah-line); border-radius: 16px; box-shadow: var(--sh-pop); cursor: pointer; pointer-events: auto; animation: rise .4s cubic-bezier(.16,1,.3,1) both; }
+      .meet-layer.minimized .meet-pill { display: flex; }
+      .meet-pill:hover { border-color: var(--sarah); transform: translateY(-1px); }
+      .mp-wave { display: flex; gap: 2.5px; align-items: flex-end; height: 16px; flex-shrink: 0; }
+      .mp-wave i { width: 2.5px; border-radius: 2px; background: var(--sarah); animation: wv .9s ease-in-out infinite; }
+      .mp-txt { flex: 1; min-width: 0; line-height: 1.3; }
+      .mp-t { font-size: 12.5px; font-weight: 560; letter-spacing: -0.01em; }
+      .mp-s { font-size: 11px; color: var(--sarah); }
+      .mp-exp { color: var(--muted); flex-shrink: 0; }
+      .mp-exp svg { width: 15px; height: 15px; stroke-width: 2; }
       .tile { position: relative; border-radius: 14px; border: 1.5px solid var(--line-2); background: var(--panel); display: grid; place-items: center; overflow: hidden; transition: border-color 0.35s, box-shadow 0.35s; }
       .tile.spk { border-color: var(--sarah); box-shadow: 0 0 0 1px var(--sarah-line), 0 8px 30px rgba(106,95,214,.16); }
       .tile .big-av { width: 64px; height: 64px; font-size: 20px; }
@@ -1076,7 +1100,7 @@
             <span class="chip chip-line"><span class="dot" style="background:var(--blue)"></span>Node / TypeScript</span>
             <div style="flex:1"></div>
             <div class="presence">${av("sarah", 27)}${av("marcus", 27)}${av("priya", 27)}<span class="av off" title="James (idle)" style="background:${PEOPLE.james.c};width:27px;height:27px;font-size:10px;border:2px solid var(--panel);margin-left:-6px;position:relative">JO</span></div>
-            <button class="btn btn-ghost" id="standup-btn" title="Demo: see the standup">${svg(icon.mic, 15, 2)} Standup</button>
+            <button class="btn btn-ghost" id="standup-btn" title="Demo only — normally the standup arrives on its own as a director nudge (standup.incoming) after review, not a button.">${svg(icon.mic, 15, 2)} Preview standup</button>
             <button class="btn btn-pri" id="report-btn" ${S.reportReady ? "" : "disabled"} title="${S.reportReady ? "Generate your evidence-backed report" : "Finish the ticket and a standup to generate your report"}">${svg(icon.file, 15, 2)} Generate report</button>
           </div>
           <div class="ws-main">
@@ -1120,28 +1144,46 @@
       const svg2 = (inner, w) => `<span style="width:${w}px;height:${w}px;display:block">${inner}</span>`;
 
       /* ════════════════ STANDUP ════════════════ */
+      // The standup arrives as a director-emitted nudge (standup.incoming), the
+      // one interrupting event — never a destination you navigate to. Here it's a
+      // modal overlay over the preserved workspace, with minimize/expand.
       let meetState = null;
-      function viewStandup() {
-        if (!meetState) meetState = { lines: [STANDUP_SCRIPT[0]], turn: 0, speaker: "sarah", done: false };
+      function openMeet() {
+        if (document.getElementById("meet-layer")) return;
+        meetState = { lines: [STANDUP_SCRIPT[0]], turn: 0, speaker: "sarah", done: false };
+        const layer = document.createElement("div");
+        layer.className = "meet-layer";
+        layer.id = "meet-layer";
+        layer.innerHTML = meetInner();
+        document.getElementById("root").appendChild(layer);
+        setTimeout(() => focusEl("tr-in"), 90);
+      }
+      function meetInner() {
         const tiles = ["sarah", "marcus", "priya", "you"];
-        return `<div class="meet fade">
-          <div class="meet-top">
-            <div class="ws-home" data-route="workspace">${svg2(LOGO, 24)}</div>
-            ${av("sarah", 30)}
-            <div><div style="font-size:13.5px;font-weight:560">Daily Standup</div><div style="font-size:11px;color:var(--muted)">Sarah Chen · Engineering Lead</div></div>
-            <span class="chip chip-violet" style="margin-left:6px">Comprehension check</span>
-            <div style="flex:1"></div>
-            <button class="btn btn-ghost" data-route="workspace">${svg('<path d="M9 6 3 12l6 6M3 12h12M21 5v14"/>', 15, 2)} Back to workspace</button>
-          </div>
-          <div class="meet-body">
-            <div class="stage">${tiles.map((t) => tile(t)).join("")}</div>
-            <div class="transcript">
-              <div class="tr-h"><span class="dot" style="background:var(--ok)"></span> Live transcript — she's listening · on ${TICKET.id}</div>
-              <div class="tr-body" id="tr-body">${meetState.lines.map(trLine).join("")}</div>
-              <div class="tr-foot" id="tr-foot">${meetFoot()}</div>
+        return `<div class="meet-modal">
+            <div class="meet-head">
+              <div class="mh-av">${av("sarah", 36)}<span class="breath"></span></div>
+              <div class="mh-id"><div class="t">Daily Standup</div><div class="s">Sarah Chen · Engineering Lead</div></div>
+              <span class="chip chip-violet">Comprehension check · ${TICKET.id}</span>
+              <div style="flex:1"></div>
+              <div class="mh-live" id="mh-live"><span class="dot" style="background:var(--ok)"></span> she's listening</div>
+              <button class="mh-ctrl" id="meet-min" title="Minimize — the standup keeps going">${svg('<path d="M5 12h14"/>', 16, 2.2)}</button>
+            </div>
+            <div class="meet-content">
+              <div class="stage">${tiles.map(tile).join("")}</div>
+              <div class="transcript">
+                <div class="tr-h"><span class="dot" style="background:var(--ok)"></span> Live transcript · she has your checks + the auth guard in context</div>
+                <div class="tr-body" id="tr-body">${meetState.lines.map(trLine).join("")}</div>
+                <div class="tr-foot" id="tr-foot">${meetFoot()}</div>
+              </div>
             </div>
           </div>
-        </div>`;
+          <div class="meet-pill" id="meet-pill" title="Expand standup">
+            <div class="mh-av">${av("sarah", 32)}</div>
+            <div class="mp-wave">${[6, 11, 5, 9, 7].map((h, i) => `<i style="height:${h}px;animation-delay:${i * 0.1}s"></i>`).join("")}</div>
+            <div class="mp-txt"><div class="mp-t">Standup in progress</div><div class="mp-s" id="mp-s">Sarah is speaking…</div></div>
+            <span class="mp-exp">${svg('<path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M3 16v3a2 2 0 0 0 2 2h3"/>', 15, 2)}</span>
+          </div>`;
       }
       function tile(k) {
         const spk = meetState.speaker === k;
@@ -1238,7 +1280,7 @@
       }
 
       /* ════════════════ ROUTER ════════════════ */
-      const VIEWS = { home: viewHome, catalog: viewCatalog, workspace: viewWorkspace, standup: viewStandup, scorecard: viewScorecard };
+      const VIEWS = { home: viewHome, catalog: viewCatalog, workspace: viewWorkspace, scorecard: viewScorecard };
       function render() {
         const root = document.getElementById("root");
         root.innerHTML = (VIEWS[S.route] || viewHome)();
@@ -1246,13 +1288,11 @@
           // an 'active'-tier pairing toast — the only thing louder is a standup
           setTimeout(showPairingToast, 1400);
         }
-        if (S.route === "standup") setTimeout(() => focusEl("tr-in"), 80);
         const m = document.querySelector(".main");
         if (m) m.scrollTo({ top: 0 });
       }
       function nav(route, opts = {}) {
         if (opts.dock) S.dock = opts.dock;
-        if (route === "standup") meetState = null;
         S.route = route;
         location.hash = "#/" + route;
         render();
@@ -1346,8 +1386,10 @@
         const qp = e.target.closest(".qp");
         if (qp) { const i = document.getElementById("tr-in"); if (i) { i.value = qp.getAttribute("data-qp"); i.focus(); } return; }
         if (e.target.closest("#tr-send")) return sendTurn();
-        if (e.target.closest("#wrap-btn")) { meetState = null; return nav("scorecard"); }
-        if (e.target.closest(".si-go")) { const l = document.getElementById("si-layer"); if (l) { clearInterval(l._t); l.remove(); } return nav("standup"); }
+        if (e.target.closest("#meet-min")) { document.getElementById("meet-layer")?.classList.add("minimized"); return; }
+        if (e.target.closest("#meet-pill")) { const l = document.getElementById("meet-layer"); if (l) { l.classList.remove("minimized"); setTimeout(() => focusEl("tr-in"), 60); } return; }
+        if (e.target.closest("#wrap-btn")) { document.getElementById("meet-layer")?.remove(); meetState = null; return nav("scorecard"); }
+        if (e.target.closest(".si-go")) { const l = document.getElementById("si-layer"); if (l) { clearInterval(l._t); l.remove(); } return openMeet(); }
         if (e.target.closest("#si-delay")) { const l = document.getElementById("si-layer"); if (l) { clearInterval(l._t); l.remove(); } return; }
         if (e.target.closest("#report-btn") && !e.target.closest("#report-btn").disabled) return nav("scorecard");
       });
@@ -1398,7 +1440,7 @@
           const el = document.getElementById("si-n");
           if (el) el.textContent = n + "s";
           if (arc) arc.style.strokeDashoffset = C * (1 - n / 8);
-          if (n <= 0) { clearInterval(t); if (document.getElementById("si-layer")) { layer.remove(); nav("standup"); } }
+          if (n <= 0) { clearInterval(t); if (document.getElementById("si-layer")) { layer.remove(); openMeet(); } }
         }, 1000);
         layer._t = t;
       }
@@ -1438,6 +1480,13 @@
         document.querySelectorAll(".tile").forEach((el) => {
           el.classList.toggle("spk", el.getAttribute("data-tile") === meetState.speaker);
         });
+        // keep the minimized pill + header presence in sync
+        const speaking = meetState.speaker !== "you";
+        const who = speaking ? PEOPLE[meetState.speaker].name.split(" ")[0] : "You";
+        const mps = document.getElementById("mp-s");
+        if (mps) mps.textContent = meetState.done ? "Ready to wrap" : speaking ? who + " is speaking…" : "Your turn";
+        const live = document.getElementById("mh-live");
+        if (live) live.innerHTML = `<span class="dot" style="background:var(--ok)"></span> ${meetState.done ? "wrapping up" : speaking ? who + " is speaking" : "she's listening"}`;
         if (!meetState.done) setTimeout(() => focusEl("tr-in"), 30);
       }
 
