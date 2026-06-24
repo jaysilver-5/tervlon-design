@@ -606,6 +606,27 @@
       .integ { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 12px; background: var(--ok-tint); border: 1px solid #bfe6d2; }
       .integ .b { font-weight: 600; color: var(--ok); }
       .caveat { font-size: 11.5px; color: var(--muted); line-height: 1.55; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); }
+      /* scorecard (candidate) — rebuilt */
+      .rep-meta { margin-bottom: 0; }
+      .report-hero { display: flex; align-items: center; gap: 34px; margin: 26px 2px 4px; }
+      .report-hero .score-ring { flex-shrink: 0; }
+      .rh-narr { flex: 1; min-width: 0; }
+      .rh-lead { font-size: 18px; line-height: 1.55; color: var(--ink-2); letter-spacing: -0.01em; }
+      .dimgrid { display: grid; grid-template-columns: 280px 1fr; gap: 30px; padding: 22px; align-items: center; }
+      .radar { display: flex; justify-content: center; }
+      .dimlist { display: flex; flex-direction: column; gap: 15px; }
+      .dimx-h { display: flex; align-items: baseline; gap: 10px; margin-bottom: 7px; }
+      .dimx-h .dn { font-size: 13px; font-weight: 540; }
+      .dimx-h .dw { font-size: 11px; color: var(--faint); font-weight: 500; }
+      .dimx-h .ds { margin-left: auto; font-size: 15px; font-weight: 600; }
+      .rep2 { display: grid; grid-template-columns: 1.3fr 1fr; gap: 22px; margin-top: 22px; align-items: start; }
+      .rec { display: flex; gap: 11px; padding: 10px 0; font-size: 13px; color: var(--ink-2); line-height: 1.55; border-bottom: 1px solid var(--line); }
+      .rec:last-child { border-bottom: none; }
+      .rec .ri { color: var(--blue); flex-shrink: 0; margin-top: 3px; }
+      .rep-integ { margin-top: 22px; padding: 18px 22px; background: var(--ok-tint); border-color: #c2e6d3; display: flex; align-items: center; gap: 14px; }
+      .integ-badge { width: 40px; height: 40px; border-radius: 12px; background: #fff; display: grid; place-items: center; color: var(--ok); flex-shrink: 0; }
+      .rep-caveat { margin: 18px auto 0; font-size: 12px; color: var(--muted); line-height: 1.6; text-align: center; max-width: 64ch; }
+      @media (max-width: 860px) { .dimgrid { grid-template-columns: 1fr; } .rep2 { grid-template-columns: 1fr; } .report-hero { flex-direction: column; align-items: flex-start; gap: 18px; } }
       /* scorecard view toggle */
       .rep-toggle { display: inline-flex; gap: 2px; padding: 3px; background: var(--well); border: 1px solid var(--line); border-radius: 10px; }
       .rep-toggle button { font-size: 12.5px; font-weight: 500; padding: 6px 14px; border-radius: 7px; border: none; background: transparent; color: var(--ink-2); display: inline-flex; align-items: center; gap: 6px; }
@@ -705,14 +726,22 @@
       ];
       const QUICK_PROMPTS = ["I'm still understanding the task", "I found the likely issue", "I'm blocked", "I'm ready to implement"];
       const REPORT = {
-        score: 87,
+        // finalScore = sum of weighted dimension scores (backend rule).
+        // 90*.3 + 86*.25 + 88*.2 + 84*.15 + 92*.1 = 87.9 -> 88
+        score: 88,
+        scenario: "E-Commerce API Sprint", level: "Mid", track: "Backend", duration: "1h 02m", status: "Final",
         narrative: "Joshua works like someone who has shipped auth before. He reached for a reusable guard without being told, reasoned out loud about the expired-vs-tampered distinction in standup, and used the references to confirm jsonwebtoken's error types rather than guess. Communication was concrete and unhurried. The one growth edge: he validated the happy path first and only branched the expired case after a nudge.",
         dims: [
-          { k: "Code correctness", v: 90 },
-          { k: "Implementation quality", v: 86 },
-          { k: "Communication", v: 88 },
-          { k: "Team readiness", v: 84 },
-          { k: "Integrity confidence", v: 92 },
+          { k: "Code correctness", short: "Code", v: 90, w: 30 },
+          { k: "Implementation quality", short: "Impl.", v: 86, w: 25 },
+          { k: "Communication", short: "Comms", v: 88, w: 20 },
+          { k: "Team readiness", short: "Team", v: 84, w: 15 },
+          { k: "Integrity confidence", short: "Integrity", v: 92, w: 10 },
+        ],
+        recommendations: [
+          "Branch the error cases alongside the happy path — the expired-token handling only landed after Marcus nudged.",
+          "Keep narrating trade-offs out loud in standup; your verbal reasoning was a clear strength to lean on.",
+          "Reach for shared error types earlier (Marcus's AppError) so responses stay consistent across routes.",
         ],
         evidence: [
           { tag: "T-03", ex: "<b>Reached for reuse unprompted</b> — built a router-agnostic guard, the exact shape T-04 needed." },
@@ -1222,6 +1251,20 @@
       }
 
       /* ════════════════ SCORECARD ════════════════ */
+      function radarSVG(dims, size = 248) {
+        const cx = size / 2, cy = size / 2, R = size / 2 - 42, n = dims.length;
+        const ang = (i) => (Math.PI * 2 * i) / n - Math.PI / 2;
+        const pt = (i, rad) => [cx + Math.cos(ang(i)) * rad, cy + Math.sin(ang(i)) * rad];
+        let grid = "";
+        [0.25, 0.5, 0.75, 1].forEach((f) => {
+          grid += `<polygon points="${dims.map((_, i) => pt(i, R * f).join(",")).join(" ")}" fill="none" stroke="var(--line-2)" stroke-width="1"/>`;
+        });
+        const axes = dims.map((_, i) => { const [x, y] = pt(i, R); return `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="var(--line-2)" stroke-width="1"/>`; }).join("");
+        const dpts = dims.map((d, i) => pt(i, R * (d.v / 100)).join(",")).join(" ");
+        const dots = dims.map((d, i) => { const [x, y] = pt(i, R * (d.v / 100)); return `<circle cx="${x}" cy="${y}" r="3.2" fill="var(--blue)" stroke="#fff" stroke-width="1.5"/>`; }).join("");
+        const labels = dims.map((d, i) => { const [x, y] = pt(i, R + 22); const a = Math.abs(x - cx) < 12 ? "middle" : x > cx ? "start" : "end"; return `<text x="${x}" y="${y}" font-size="10.5" font-weight="500" fill="var(--muted)" text-anchor="${a}" dominant-baseline="middle">${d.short}</text>`; }).join("");
+        return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}"><defs><radialGradient id="rdg" cx="50%" cy="50%" r="60%"><stop offset="0%" stop-color="rgba(46,139,206,.30)"/><stop offset="100%" stop-color="rgba(86,198,235,.12)"/></radialGradient></defs>${grid}${axes}<polygon points="${dpts}" fill="url(#rdg)" stroke="var(--blue)" stroke-width="2" stroke-linejoin="round"/>${dots}${labels}</svg>`;
+      }
       function viewScorecard() {
         const r = REPORT, C = 2 * Math.PI * 46;
         // Developer flow shows the candidate view only. The company/reviewer view
@@ -1235,17 +1278,46 @@
 
         let body;
         if (!company) {
-          body = `<div class="report-hd">${ring}<div style="flex:1">
-              <span class="label" style="color:var(--blue-d)">Evidence-backed scorecard</span>
-              <h1 class="display" style="font-size:24px;margin:8px 0 10px">How Joshua actually worked</h1>
-              <p class="lead serif" style="font-size:17px;line-height:1.5;color:var(--ink-2)">${r.narrative}</p>
-            </div></div>
-            <div class="rep-grid">${evidence}
-              <div style="display:flex;flex-direction:column;gap:20px">${dims}
-                <div class="panel"><div class="ph">Integrity</div>
-                  <div class="integ">${svg(icon.shield, 18, 1.9).replace("currentColor", "var(--ok)")}<div><div class="b">Clear · ${r.integrity.confidence}</div><div style="font-size:11.5px;color:var(--muted)">Verified — nothing to flag</div></div></div>
-                  <div class="caveat">On your side, integrity shows as reassurance, never accusation. The detailed evidence is for reviewers.</div>
-                </div></div></div>`;
+          const first = r.meta.candidate.split(" ")[0];
+          body = `
+            <div class="meta-strip rep-meta">
+              <div class="mc"><div class="mk">Candidate</div><div class="mv">${r.meta.candidate}</div></div>
+              <div class="mc"><div class="mk">Sprint</div><div class="mv">${r.scenario} · ${r.level}</div></div>
+              <div class="mc"><div class="mk">Track</div><div class="mv">${r.track}</div></div>
+              <div class="mc"><div class="mk">Duration</div><div class="mv">${r.duration}</div></div>
+              <div class="mc"><div class="mk">Status</div><div class="mv"><span class="chip chip-ok">${r.status}</span></div></div>
+            </div>
+            <div class="report-hero">
+              ${ring}
+              <div class="rh-narr">
+                <span class="label" style="color:var(--blue-d)">Evidence-backed scorecard</span>
+                <h1 class="display" style="font-size:26px;margin:8px 0 12px">How ${first} actually worked</h1>
+                <p class="serif rh-lead">${r.narrative}</p>
+              </div>
+            </div>
+            <div class="panel" style="margin-top:26px">
+              <div class="pnl-h"><div class="t">Weighted dimensions</div><div class="x">Final score is the weighted sum — code 30 · impl 25 · comms 20 · team 15 · integrity 10</div></div>
+              <div class="dimgrid">
+                <div class="radar">${radarSVG(r.dims)}</div>
+                <div class="dimlist">${r.dims.map((d) => `<div class="dimx"><div class="dimx-h"><span class="dn">${d.k}</span><span class="dw">${d.w}% weight</span><span class="ds tnum">${d.v}</span></div><div class="dim-bar"><i style="width:${d.v}%"></i></div></div>`).join("")}</div>
+              </div>
+            </div>
+            <div class="rep2">
+              <div class="panel">
+                <div class="pnl-h"><div class="t">Evidence by moment</div><div class="x">Each score traces to what happened</div></div>
+                <div style="padding:4px 20px 14px">${r.evidence.map((e) => `<div class="ev-row"><span class="tag">${e.tag}</span><div class="ex">${e.ex}</div></div>`).join("")}</div>
+              </div>
+              <div class="panel">
+                <div class="pnl-h"><div class="t">What to work on next</div></div>
+                <div style="padding:6px 20px 16px">${r.recommendations.map((rec) => `<div class="rec"><span class="ri">${svg(icon.arrow, 13, 2.4)}</span><div>${rec}</div></div>`).join("")}</div>
+              </div>
+            </div>
+            <div class="panel rep-integ">
+              <div class="integ-badge">${svg(icon.shield, 20, 1.9)}</div>
+              <div style="flex:1"><div style="font-weight:600;font-size:14px">Integrity · Clear</div><div style="font-size:12.5px;color:var(--muted);margin-top:2px">Verified — nothing to flag. On your side this is reassurance; the neutral evidence timeline is shown to reviewers only, never as an accusation.</div></div>
+              <div class="tnum" style="font-size:27px;font-weight:650;color:var(--ok)">${r.integrity.confidence}</div>
+            </div>
+            <div class="rep-caveat">This scorecard supports a hiring decision; it does not replace one. Read the moments, not just the number — there is no “pass / fail” here, by design.</div>`;
         } else {
           const band = r.integrity.confidence;
           body = `<div class="meta-strip">
@@ -1281,9 +1353,9 @@
               <div><div style="font-weight:560;font-size:13px;color:var(--blue-d);margin-bottom:3px">How to read this</div><div style="font-size:12.5px;color:var(--ink-2);line-height:1.55">${r.hiringNote} There is no "pass/fail" or "cheater" state by design — the report supports your judgment, it does not replace it.</div></div></div>
             </div>`;
         }
-        return shell("scorecard", `<section class="page fade" style="max-width:1000px">
-          <div class="crumb"><span class="c-link" data-route="home">Home</span>${svg('<path d="m9 6 6 6-6 6"/>', 13, 2)}<span style="color:var(--ink-2);font-weight:500">Scorecard · E-Commerce API Sprint</span>
-            <div style="margin-left:auto">${toggle}</div></div>
+        return shell("scorecard", `<section class="page fade" style="max-width:1160px">
+          <div class="crumb"><span class="c-link" data-route="home">Home</span>${svg('<path d="m9 6 6 6-6 6"/>', 13, 2)}<span class="c-link" data-route="scorecard">Scorecards</span>${svg('<path d="m9 6 6 6-6 6"/>', 13, 2)}<span style="color:var(--ink-2);font-weight:500">E-Commerce API Sprint</span>
+            <div style="margin-left:auto;display:flex;gap:8px">${toggle}<button class="btn btn-ghost btn-sm">${svg('<path d="M12 3v12M7 10l5 5 5-5M5 21h14"/>', 14, 2)} Export PDF</button></div></div>
           ${body}
           <div class="footer"><span>Narrative first · the number is present, never the headline.</span><span><button class="btn btn-ghost btn-sm" data-route="workspace">Back to workspace</button></span></div>
         </section>`);
