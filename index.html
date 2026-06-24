@@ -242,6 +242,75 @@
       .tab.on { background: var(--panel); color: var(--ink); font-weight: 560; box-shadow: var(--sh-1); }
       .footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: var(--faint); }
 
+      /* ── developer dashboard (premium, credential tone) ── */
+      .greet { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 24px; }
+      .greet .display { font-size: 30px; margin-top: 7px; }
+      .greet .display em { color: var(--ink); }
+      .greet-r { display: flex; align-items: center; gap: 10px; }
+      .avl { display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; font-weight: 500; color: var(--ink-2); border: 1px solid var(--line-2); border-radius: 99px; padding: 6px 13px; background: var(--panel); }
+      /* continue — horizontal gradient focal */
+      .continue { position: relative; border-radius: 18px; padding: 1px; background: var(--grad); box-shadow: var(--sh-blue); margin-bottom: 26px; }
+      .continue-in { position: relative; border-radius: 17px; padding: 22px 26px; background: var(--grad); overflow: hidden; color: #eaf5fd; display: flex; align-items: center; gap: 28px; }
+      .continue-in::before { content: ""; position: absolute; inset: 0; background: radial-gradient(80% 120% at 92% -10%, rgba(255,255,255,.32), transparent 55%); pointer-events: none; }
+      .continue-in > * { position: relative; }
+      .continue .l { flex: 1; min-width: 0; }
+      .continue .rk { font-size: 10.5px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,.82); display: flex; align-items: center; gap: 7px; }
+      .continue h3 { font-size: 20px; font-weight: 600; letter-spacing: -0.02em; color: #fff; margin: 9px 0 2px; }
+      .continue .sub { font-size: 12.5px; color: rgba(234,245,253,.8); }
+      .continue .pwrap { display: flex; align-items: center; gap: 14px; margin-top: 16px; max-width: 460px; }
+      .continue .pwrap .bar { flex: 1; }
+      .continue .pmeta { font-size: 11.5px; color: rgba(234,245,253,.78); white-space: nowrap; }
+      .continue .r { display: flex; flex-direction: column; align-items: flex-end; gap: 12px; }
+      .continue .rbtn { background: #fff; color: var(--blue-d); font-weight: 560; border: none; border-radius: 11px; padding: 12px 20px; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 8px 22px rgba(8,40,72,.24); transition: transform 0.15s; }
+      .continue .rbtn:hover { transform: translateY(-1.5px); }
+      .continue .rbtn svg { width: 16px; height: 16px; stroke-width: 2.2; }
+      .continue .ppl .av { border: 2px solid rgba(255,255,255,.35); }
+
+      .dash-grid { display: grid; grid-template-columns: 1fr 332px; gap: 20px; align-items: start; }
+      .pnl { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--sh-1); }
+      .pnl-h { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--line); }
+      .pnl-h .t { font-size: 13.5px; font-weight: 560; letter-spacing: -0.01em; }
+      .pnl-h .x { font-size: 11.5px; color: var(--muted); }
+      .pnl-h .link { font-size: 12.5px; color: var(--blue-d); font-weight: 500; cursor: pointer; }
+      /* skill evidence track rows */
+      .trk { display: flex; align-items: center; gap: 16px; padding: 15px 20px; border-bottom: 1px solid var(--line); }
+      .trk:last-child { border-bottom: none; }
+      .trk .ti { display: flex; align-items: center; gap: 10px; width: 150px; flex-shrink: 0; }
+      .trk .sq { width: 9px; height: 9px; border-radius: 3px; flex-shrink: 0; }
+      .trk .tn { font-size: 13px; font-weight: 540; }
+      .trk .tl2 { font-size: 11px; color: var(--muted); }
+      .trk .spark { flex: 1; display: flex; align-items: center; justify-content: center; }
+      .trk .tv { width: 86px; text-align: right; flex-shrink: 0; }
+      .trk .tv b { font-size: 16px; font-weight: 600; letter-spacing: -0.02em; }
+      .trk .tv .vr { font-size: 10.5px; color: var(--muted); }
+      .trk.empty .tn, .trk.empty .tv b { color: var(--faint); }
+      .lvl-chip { font-size: 9.5px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; padding: 2px 6px; border-radius: 5px; background: var(--blue-tint); color: var(--blue-d); }
+      /* history table */
+      .htab { width: 100%; border-collapse: collapse; }
+      .htab td, .htab th { padding: 12px 20px; text-align: left; border-bottom: 1px solid var(--line); }
+      .htab th { font-size: 10.5px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--faint); }
+      .htab tr:last-child td { border-bottom: none; }
+      .htab tbody tr { cursor: pointer; transition: background 0.12s; }
+      .htab tbody tr:hover { background: var(--panel-2); }
+      .htab .hs { font-weight: 600; font-variant-numeric: tabular-nums; }
+      .htab .ht2 { font-size: 13px; font-weight: 500; }
+      .band-pill { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 540; padding: 2px 9px; border-radius: 99px; }
+      /* featured credential cards */
+      .cred { padding: 16px; border-bottom: 1px solid var(--line); display: flex; gap: 13px; align-items: center; cursor: pointer; transition: background 0.12s; }
+      .cred:hover { background: var(--panel-2); }
+      .cred:last-child { border-bottom: none; }
+      .cred .ring { width: 48px; height: 48px; position: relative; flex-shrink: 0; }
+      .cred .ring .rn { position: absolute; inset: 0; display: grid; place-items: center; font-size: 14px; font-weight: 650; }
+      .cred .ct { font-size: 13px; font-weight: 540; letter-spacing: -0.01em; }
+      .cred .cs { font-size: 11.5px; color: var(--muted); margin-top: 1px; }
+      .cred .vbadge { margin-left: auto; color: var(--ok); flex-shrink: 0; }
+      .cred .vbadge svg { width: 17px; height: 17px; }
+      .evsum { display: grid; grid-template-columns: repeat(3, 1fr); }
+      .evsum .e { padding: 16px; text-align: center; border-right: 1px solid var(--line); }
+      .evsum .e:last-child { border-right: none; }
+      .evsum .ev2 { font-size: 22px; font-weight: 600; letter-spacing: -0.02em; }
+      .evsum .el { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
       /* ════════ WORKSPACE ════════ */
       .ws { display: grid; grid-template-rows: 53px 1fr 27px; height: 100vh; }
       .ws-top { display: flex; align-items: center; gap: 13px; padding: 0 16px; background: var(--panel); border-bottom: 1px solid var(--line); z-index: 5; }
@@ -633,7 +702,6 @@
       };
 
       /* ════════════════ HELPERS ════════════════ */
-      const E = (s) => String(s);
       const av = (k, sz, extra = "") =>
         `<span class="av${extra ? " " + extra : ""}" title="${PEOPLE[k].name}" style="background:${PEOPLE[k].c};width:${sz}px;height:${sz}px;font-size:${Math.round(sz * 0.36)}px">${PEOPLE[k].i}</span>`;
       const lvl = (n) => `<span class="lvl">${[1, 2, 3].map((i) => `<i class="${i <= n ? "on" : ""}"></i>`).join("")}</span>`;
@@ -706,46 +774,96 @@
         return `<div class="app">${rail(active)}<main class="main">${topbar()}${inner}</main></div>`;
       }
 
+      /* ════════════════ HOME · DEVELOPER DASHBOARD ════════════════ */
+      // Rooted in the real getDashboard fields: continueWork, trajectory (skill
+      // evidence growing over time — NOT a leaderboard/streak), featuredReports
+      // (the credential), latestRetrospective, sprintStats. No invented percentile.
+      const DEV = {
+        name: "Joshua",
+        availability: "Open to work",
+        continueWork: { title: "E-Commerce API Sprint", track: "Backend", level: "Mid", ticket: "T-03 · Auth middleware", pct: 46, done: 2, total: 5, mins: 38, team: ["sarah", "marcus", "priya"] },
+        trajectory: [
+          { track: "Backend", level: "Mid", verified: 3, spark: [72, 78, 84, 87], last: 87 },
+          { track: "Frontend", level: "Junior", verified: 1, spark: [76, 79], last: 79 },
+          { track: "Full-stack", level: "—", verified: 0, spark: [], last: null },
+        ],
+        featured: [
+          { title: "E-Commerce API Sprint", track: "Backend", date: "May 2026", score: 87, band: "clear" },
+          { title: "Webhook Reliability Sprint", track: "Backend", date: "Apr 2026", score: 84, band: "clear" },
+        ],
+        history: [
+          { title: "E-Commerce API Sprint", track: "Backend", date: "May 12", score: 87, band: "clear" },
+          { title: "Checkout Form Sprint", track: "Frontend", date: "Apr 28", score: 79, band: "clear" },
+          { title: "Webhook Reliability Sprint", track: "Backend", date: "Apr 9", score: 84, band: "review_suggested" },
+          { title: "Campaign Analytics Sprint", track: "Backend", date: "Mar 30", score: 81, band: "clear" },
+        ],
+        stats: { attempts: 5, completed: 3, reports: 3 },
+      };
+      const BANDS = { clear: { t: "Clear", c: "var(--ok)", bg: "var(--ok-tint)" }, review_suggested: { t: "Review suggested", c: "var(--warn)", bg: "var(--warn-tint)" }, review_recommended: { t: "Review rec.", c: "var(--err)", bg: "var(--err-tint)" } };
+      function spark(vals, w = 96, h = 28) {
+        if (!vals || vals.length < 2) return `<span style="font-size:11px;color:var(--faint)">building…</span>`;
+        const mx = Math.max(...vals), mn = Math.min(...vals), rng = mx - mn || 1;
+        const y = (v) => h - 3 - ((v - mn) / rng) * (h - 6);
+        const pts = vals.map((v, i) => `${(i / (vals.length - 1)) * w},${y(v)}`).join(" ");
+        const lx = w, ly = y(vals[vals.length - 1]);
+        return `<svg width="${w}" height="${h}" style="overflow:visible"><polyline points="${pts}" fill="none" stroke="url(#lg)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="${lx}" cy="${ly}" r="2.6" fill="var(--blue)"/></svg>`;
+      }
+
       /* ════════════════ HOME ════════════════ */
       function viewHome() {
-        const card = (s) => sprintCard(s);
-        const reco = SPRINTS.filter((s) => ["campaign-analytics-sprint", "feature-flags-sprint", "analytics-dashboard-sprint"].includes(s.slug));
-        return shell("home", `<section class="page fade">
-          <div class="crumb"><span style="color:var(--ink-2);font-weight:500">Home</span></div>
-          <div class="home-top">
-            <div class="home-intro rise">
-              <span class="label" style="color:var(--blue-d)">Mid-sprint · Day 2</span>
-              <h1 class="display">Your team is already<br/>moving. <em>Catch up.</em></h1>
-              <p class="lead">You joined the e-commerce squad mid-sprint. Two tickets are in your name, Sarah has a standup queued, and James is waiting to review. Real work, observed — not a quiz.</p>
-              <div class="home-actions">
-                <button class="btn btn-pri" data-route="workspace">Resume sprint ${svg(icon.arrow, 15, 2.1)}</button>
-                <button class="btn btn-ghost" data-route="catalog">Browse catalog</button>
+        const d = DEV, cw = d.continueWork;
+        const miniRing = (score) => {
+          const C = 2 * Math.PI * 20;
+          return `<div class="ring"><svg width="48" height="48" style="transform:rotate(-90deg)"><circle cx="24" cy="24" r="20" fill="none" stroke="var(--well)" stroke-width="4"/><circle cx="24" cy="24" r="20" fill="none" stroke="url(#lg)" stroke-width="4" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C * (1 - score / 100)}"/></svg><div class="rn tnum">${score}</div></div>`;
+        };
+        const bandPill = (b) => `<span class="band-pill" style="background:${BANDS[b].bg};color:${BANDS[b].c}"><span class="dot" style="background:${BANDS[b].c}"></span>${BANDS[b].t}</span>`;
+        const trkRow = (t) => `<div class="trk ${t.verified ? "" : "empty"}">
+            <div class="ti"><span class="sq" style="background:${t.verified ? TRACK_C[t.track] : "var(--line-3)"}"></span><div><div class="tn">${t.track}</div><div class="tl2">${t.verified ? "Verified · " + t.verified + " sprint" + (t.verified > 1 ? "s" : "") : "Not started"}</div></div></div>
+            <div class="spark">${spark(t.spark)}</div>
+            <div class="tv">${t.last != null ? `<b>${t.last}</b> <span class="vr">latest</span>` : `<span class="lvl-chip" style="background:var(--well);color:var(--faint)">—</span>`}</div>
+          </div>`;
+        const hRow = (h) => `<tr data-route="scorecard"><td><div class="ht2">${h.title}</div></td><td><span class="track" style="font-size:11.5px"><span class="sq" style="width:7px;height:7px;background:${TRACK_C[h.track]}"></span>${h.track}</span></td><td style="color:var(--muted);font-size:12.5px">${h.date}</td><td class="hs">${h.score}</td><td>${bandPill(h.band)}</td></tr>`;
+        const cred = (f) => `<div class="cred" data-route="scorecard">${miniRing(f.score)}<div style="min-width:0"><div class="ct">${f.title}</div><div class="cs">${f.track} · ${f.date}</div></div><span class="vbadge" title="Verified evidence">${svg('<path d="M12 2 4 6v6c0 4 3 7 8 8 5-1 8-4 8-8V6z"/><path d="m9 12 2 2 4-4"/>', 17, 1.9)}</span></div>`;
+        return shell("home", `<section class="page fade" style="max-width:1100px">
+          <div class="greet">
+            <div><span class="label" style="color:var(--blue-d)">Your verified engineering record</span><h1 class="display">Good morning, <em class="serif">${d.name}</em>.</h1></div>
+            <div class="greet-r"><span class="avl"><span class="dot" style="background:var(--ok)"></span>${d.availability}</span><button class="btn btn-ghost btn-sm">View public profile ${svg(icon.arrow, 14, 2)}</button></div>
+          </div>
+
+          <div class="continue rise"><div class="continue-in">
+            <div class="l">
+              <div class="rk"><span class="live-dot"></span> Continue where you left off</div>
+              <h3>${cw.title}</h3><div class="sub">${cw.track} · ${cw.level} · ${cw.ticket}</div>
+              <div class="pwrap"><div class="bar"><i style="width:${cw.pct}%"></i></div><span class="pmeta">${cw.done} of ${cw.total} tickets · ~${cw.mins}m left</span></div>
+            </div>
+            <div class="r"><span class="ppl">${cw.team.map((k) => av(k, 28)).join("")}</span><button class="rbtn" data-route="workspace">Resume sprint ${svg(icon.arrow, 16, 2.2)}</button></div>
+          </div></div>
+
+          <div class="dash-grid">
+            <div style="display:flex;flex-direction:column;gap:20px">
+              <div class="pnl rise" style="animation-delay:.05s">
+                <div class="pnl-h"><div class="t">Skill evidence</div><div class="x">Track record, growing over time — not a ranking</div></div>
+                ${d.trajectory.map(trkRow).join("")}
               </div>
-              <div class="meta-inline">
-                <div style="display:flex;align-items:center;gap:8px"><span class="ppl">${["sarah", "marcus", "priya"].map((k) => av(k, 26)).join("")}</span><span>3 teammates online</span></div>
-                <span style="width:1px;height:14px;background:var(--line-2)"></span><span>Sandbox warm · Postgres migrated</span>
+              <div class="pnl rise" style="animation-delay:.1s">
+                <div class="pnl-h"><div class="t">Recent sprints</div><span class="link" data-route="catalog">Sprint history</span></div>
+                <table class="htab"><thead><tr><th>Sprint</th><th>Track</th><th>Date</th><th>Score</th><th>Integrity</th></tr></thead><tbody>${d.history.map(hRow).join("")}</tbody></table>
               </div>
             </div>
-            <div class="resume rise" style="animation-delay:.08s">
-              <div class="resume-inner">
-                <div class="rk"><span class="live-dot"></span> Continue where you left off</div>
-                <h3>E-Commerce API Sprint</h3><div class="sub">Backend · Mid · 5 tickets</div>
-                <div class="tk"><span>T-03 · Auth middleware</span><span class="tnum" style="opacity:.82">46%</span></div>
-                <div class="bar"><i style="width:46%"></i></div>
-                <div class="foot"><span>2 of 5 tickets done</span><span>~38 min left</span></div>
-                <button class="cta" data-route="workspace">Open workspace ${svg(icon.arrow, 16, 2.2)}</button>
+            <div style="display:flex;flex-direction:column;gap:20px">
+              <div class="pnl rise" style="animation-delay:.08s">
+                <div class="pnl-h"><div class="t">Featured scorecards</div><div class="x">The credential</div></div>
+                ${d.featured.map(cred).join("")}
+                <div style="padding:12px 16px;font-size:11px;color:var(--faint);border-top:1px solid var(--line)">Pinned to your public profile — sprint evidence, more trusted than a resume claim.</div>
+              </div>
+              <div class="pnl evsum rise" style="animation-delay:.12s">
+                <div class="e"><div class="ev2 tnum">${d.stats.attempts}</div><div class="el">Sprints taken</div></div>
+                <div class="e"><div class="ev2 tnum">${d.stats.completed}</div><div class="el">Completed</div></div>
+                <div class="e"><div class="ev2 tnum">${d.stats.reports}</div><div class="el">Scorecards</div></div>
               </div>
             </div>
           </div>
-          <div class="signal rise" style="animation-delay:.12s">
-            <div class="sg"><div class="k">Sprints completed</div><div class="v tnum">3</div><div class="d">+1 this month</div></div>
-            <div class="sg"><div class="k">Avg. evidence score</div><div class="v tnum">87<small>/100</small></div><div class="d">Top 12% of devs</div></div>
-            <div class="sg"><div class="k">Integrity band</div><div class="v" style="font-size:22px;align-items:center;gap:7px"><span class="dot" style="background:var(--ok);width:8px;height:8px"></span>Clear</div><div class="d" style="color:var(--muted)">Verified · 3 sprints</div></div>
-            <div class="sg"><div class="k">Featured for hiring</div><div class="v tnum">2</div><div class="d" style="color:var(--muted)">Pinned to profile</div></div>
-          </div>
-          <div class="sec-head"><div class="h2">Recommended next</div><span class="link" data-route="catalog">All sprints ${svg(icon.arrow, 14, 2)}</span></div>
-          <div class="grid stagger">${reco.map(card).join("")}</div>
-          <div class="footer"><span>Tervlon — a day on a good team, observed.</span><span>Design preview</span></div>
+          <div class="footer"><span>Tervlon — skill evidence growing over time, never a leaderboard.</span><span>Design preview</span></div>
         </section>`);
       }
       function sprintCard(s) {
