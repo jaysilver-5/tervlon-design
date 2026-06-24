@@ -177,7 +177,7 @@
       .tb-btn { width: 36px; height: 36px; border-radius: 9px; border: 1px solid var(--line-2); background: var(--panel); display: grid; place-items: center; color: var(--ink-2); }
       .tb-btn:hover { border-color: var(--line-3); color: var(--ink); }
       .tb-btn svg { width: 17px; height: 17px; stroke-width: 1.9; }
-      .page { padding: 32px 40px 64px; max-width: 1140px; }
+      .page { padding: 38px 52px 72px; max-width: 1360px; margin: 0 auto; width: 100%; }
       .crumb { display: flex; align-items: center; gap: 7px; font-size: 12.5px; color: var(--muted); margin-bottom: 24px; }
       .crumb svg { width: 13px; height: 13px; stroke-width: 2; }
       .crumb .c-link { cursor: pointer; }
@@ -268,7 +268,7 @@
       .continue .rbtn svg { width: 16px; height: 16px; stroke-width: 2.2; }
       .continue .ppl .av { border: 2px solid rgba(255,255,255,.35); }
 
-      .dash-grid { display: grid; grid-template-columns: 1fr 332px; gap: 20px; align-items: start; }
+      .dash-grid { display: grid; grid-template-columns: 1fr 332px; gap: 24px; align-items: start; }
       .pnl { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--sh-1); }
       .pnl-h { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--line); }
       .pnl-h .t { font-size: 13.5px; font-weight: 560; letter-spacing: -0.01em; }
@@ -770,6 +770,7 @@
         reviewReq: false,
         reportReady: false,
         repView: "candidate",
+        standupFired: false,
         termLines: [],
         termHist: [],
         histIdx: -1,
@@ -853,12 +854,12 @@
         const bandPill = (b) => `<span class="band-pill" style="background:${BANDS[b].bg};color:${BANDS[b].c}"><span class="dot" style="background:${BANDS[b].c}"></span>${BANDS[b].t}</span>`;
         const trkRow = (t) => `<div class="trk ${t.verified ? "" : "empty"}">
             <div class="ti"><span class="sq" style="background:${t.verified ? TRACK_C[t.track] : "var(--line-3)"}"></span><div><div class="tn">${t.track}</div><div class="tl2">${t.verified ? "Verified · " + t.verified + " sprint" + (t.verified > 1 ? "s" : "") : "Not started"}</div></div></div>
-            <div class="spark">${spark(t.spark)}</div>
+            <div class="spark">${spark(t.spark, 240, 32)}</div>
             <div class="tv">${t.last != null ? `<b>${t.last}</b> <span class="vr">latest</span>` : `<span class="lvl-chip" style="background:var(--well);color:var(--faint)">—</span>`}</div>
           </div>`;
         const hRow = (h) => `<tr data-route="scorecard"><td><div class="ht2">${h.title}</div></td><td><span class="track" style="font-size:11.5px"><span class="sq" style="width:7px;height:7px;background:${TRACK_C[h.track]}"></span>${h.track}</span></td><td style="color:var(--muted);font-size:12.5px">${h.date}</td><td class="hs">${h.score}</td><td>${bandPill(h.band)}</td></tr>`;
         const cred = (f) => `<div class="cred" data-route="scorecard">${miniRing(f.score)}<div style="min-width:0"><div class="ct">${f.title}</div><div class="cs">${f.track} · ${f.date}</div></div><span class="vbadge" title="Verified evidence">${svg('<path d="M12 2 4 6v6c0 4 3 7 8 8 5-1 8-4 8-8V6z"/><path d="m9 12 2 2 4-4"/>', 17, 1.9)}</span></div>`;
-        return shell("home", `<section class="page fade" style="max-width:1100px">
+        return shell("home", `<section class="page fade">
           <div class="greet">
             <div><span class="label" style="color:var(--blue-d)">Your verified engineering record</span><h1 class="display">Good morning, <em class="serif">${d.name}</em>.</h1></div>
             <div class="greet-r"><span class="avl"><span class="dot" style="background:var(--ok)"></span>${d.availability}</span><button class="btn btn-ghost btn-sm">View public profile ${svg(icon.arrow, 14, 2)}</button></div>
@@ -874,31 +875,31 @@
             <div class="r"><span class="ppl">${cw.team.map((k) => av(k, 28)).join("")}</span><button class="rbtn" data-route="workspace">Resume sprint ${svg(icon.arrow, 16, 2.2)}</button></div>
           </div></div>
 
-          <div class="dash-grid">
-            <div style="display:flex;flex-direction:column;gap:20px">
-              <div class="pnl rise" style="animation-delay:.05s">
-                <div class="pnl-h"><div class="t">Skill evidence</div><div class="x">Track record, growing over time — not a ranking</div></div>
-                ${d.trajectory.map(trkRow).join("")}
-              </div>
-              <div class="pnl rise" style="animation-delay:.1s">
-                <div class="pnl-h"><div class="t">Recent sprints</div><span class="link" data-route="catalog">Sprint history</span></div>
-                <table class="htab"><thead><tr><th>Sprint</th><th>Track</th><th>Date</th><th>Score</th><th>Integrity</th></tr></thead><tbody>${d.history.map(hRow).join("")}</tbody></table>
-              </div>
+          <div class="signal rise" style="margin-top:26px;animation-delay:.04s">
+            <div class="sg"><div class="k">Sprints completed</div><div class="v tnum">${d.stats.completed}</div><div class="d" style="color:var(--muted)">of ${d.stats.attempts} taken</div></div>
+            <div class="sg"><div class="k">Verified scorecards</div><div class="v tnum">${d.stats.reports}</div><div class="d" style="color:var(--muted)">2 featured</div></div>
+            <div class="sg"><div class="k">Tracks verified</div><div class="v tnum">2</div><div class="d" style="color:var(--muted)">Backend · Frontend</div></div>
+            <div class="sg"><div class="k">Integrity</div><div class="v" style="font-size:22px;align-items:center;gap:7px"><span class="dot" style="background:var(--ok);width:8px;height:8px"></span>Clear</div><div class="d" style="color:var(--muted)">across 3 sprints</div></div>
+          </div>
+
+          <div class="pnl rise" style="margin-top:24px;animation-delay:.08s">
+            <div class="pnl-h"><div class="t">Skill evidence</div><div class="x">Track record, growing over time — not a ranking</div></div>
+            ${d.trajectory.map(trkRow).join("")}
+          </div>
+
+          <div class="dash-grid" style="grid-template-columns:1.6fr 1fr;margin-top:24px">
+            <div class="pnl rise" style="animation-delay:.1s">
+              <div class="pnl-h"><div class="t">Recent sprints</div><span class="link" data-route="catalog">Sprint history</span></div>
+              <table class="htab"><thead><tr><th>Sprint</th><th>Track</th><th>Date</th><th>Score</th><th>Integrity</th></tr></thead><tbody>${d.history.map(hRow).join("")}</tbody></table>
             </div>
-            <div style="display:flex;flex-direction:column;gap:20px">
-              <div class="pnl rise" style="animation-delay:.08s">
-                <div class="pnl-h"><div class="t">Featured scorecards</div><div class="x">The credential</div></div>
-                ${d.featured.map(cred).join("")}
-                <div style="padding:12px 16px;font-size:11px;color:var(--faint);border-top:1px solid var(--line)">Pinned to your public profile — sprint evidence, more trusted than a resume claim.</div>
-              </div>
-              <div class="pnl evsum rise" style="animation-delay:.12s">
-                <div class="e"><div class="ev2 tnum">${d.stats.attempts}</div><div class="el">Sprints taken</div></div>
-                <div class="e"><div class="ev2 tnum">${d.stats.completed}</div><div class="el">Completed</div></div>
-                <div class="e"><div class="ev2 tnum">${d.stats.reports}</div><div class="el">Scorecards</div></div>
-              </div>
+            <div class="pnl rise" style="animation-delay:.12s">
+              <div class="pnl-h"><div class="t">Featured scorecards</div><div class="x">The credential</div></div>
+              ${d.featured.map(cred).join("")}
+              <div style="padding:12px 16px;font-size:11px;color:var(--faint);border-top:1px solid var(--line)">Pinned to your public profile — sprint evidence, more trusted than a resume claim.</div>
             </div>
           </div>
-          <div class="sec-head" style="margin-top:42px"><div class="h2">Explore next</div><span class="link" data-route="catalog">All sprints ${svg(icon.arrow, 14, 2)}</span></div>
+
+          <div class="sec-head" style="margin-top:44px"><div class="h2">Explore next</div><span class="link" data-route="catalog">All sprints ${svg(icon.arrow, 14, 2)}</span></div>
           <div class="grid stagger">${reco.map(sprintCard).join("")}</div>
           <div class="footer"><span>Tervlon — skill evidence growing over time, never a leaderboard.</span><span>Design preview</span></div>
         </section>`);
@@ -1113,8 +1114,8 @@
             <span class="chip chip-line"><span class="dot" style="background:var(--blue)"></span>Node / TypeScript</span>
             <div style="flex:1"></div>
             <div class="presence">${av("sarah", 27)}${av("marcus", 27)}${av("priya", 27)}<span class="av off" title="James (idle)" style="background:${PEOPLE.james.c};width:27px;height:27px;font-size:10px;border:2px solid var(--panel);margin-left:-6px;position:relative">JO</span></div>
-            <button class="btn btn-ghost" id="standup-btn" title="Demo only — normally the standup arrives on its own as a director nudge (standup.incoming) after review, not a button.">${svg(icon.mic, 15, 2)} Preview standup</button>
-            <button class="btn btn-pri" id="report-btn" ${S.reportReady ? "" : "disabled"} title="${S.reportReady ? "Generate your evidence-backed report" : "Finish the ticket and a standup to generate your report"}">${svg(icon.file, 15, 2)} Generate report</button>
+            <span class="chip chip-line" title="Files autosave to the server (writeFile) — there is no manual save button"><span class="dot" style="background:var(--ok)"></span>Saved · v4</span>
+            <button class="btn btn-pri" id="report-btn" ${S.reportReady ? "" : "disabled"} title="${S.reportReady ? "Generate your evidence-backed report" : "Unlocks when all tickets pass review and you've completed a standup"}">${svg(icon.file, 15, 2)} Generate report</button>
           </div>
           <div class="ws-main">
             ${taskPanel()}
@@ -1147,6 +1148,7 @@
             <span class="sb-item mono" style="color:var(--faint)">sess_3a9f…c21</span>
             <span class="sb-item">workspace</span>
             <div style="flex:1"></div>
+            <span class="sb-item" id="sd-demo" style="color:var(--sarah)" title="Demo: in the real app the director decides when Sarah calls a standup (e.g. after a ticket is reviewed). Here it auto-arrives so you can see the flow.">${svg(icon.mic, 12, 2)} standup nudge in 0:30</span>
             <span class="sb-item">Sandbox warm · Postgres migrated</span>
             <span class="sb-item mono" style="color:var(--faint)">src/middleware/auth.guard.ts</span>
             <span class="sb-item">TypeScript</span>
@@ -1222,11 +1224,11 @@
       /* ════════════════ SCORECARD ════════════════ */
       function viewScorecard() {
         const r = REPORT, C = 2 * Math.PI * 46;
-        const company = S.repView === "company";
-        const toggle = `<div class="rep-toggle">
-          <button class="${!company ? "on" : ""}" data-repview="candidate">${svg('<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>', 14, 1.9)} Candidate view</button>
-          <button class="${company ? "on" : ""}" data-repview="company">${svg('<path d="M3 21V8l6-4 6 4v13M9 21v-5h3v5M15 11h3v10"/>', 14, 1.9)} Company view</button>
-        </div>`;
+        // Developer flow shows the candidate view only. The company/reviewer view
+        // lives under the Company role (separate dashboard) — built later. The
+        // company render path below is kept dormant for reuse there.
+        const company = false;
+        const toggle = "";
         const ring = `<div class="score-ring"><svg width="104" height="104" style="transform:rotate(-90deg)"><circle cx="52" cy="52" r="46" fill="none" stroke="var(--well)" stroke-width="8"/><circle cx="52" cy="52" r="46" fill="none" stroke="url(#lgr)" stroke-width="8" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C * (1 - r.score / 100)}"/><defs><linearGradient id="lgr" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#56c6eb"/><stop offset="100%" stop-color="#155fa0"/></linearGradient></defs></svg><div class="n"><b class="tnum">${r.score}</b><s>Evidence</s></div></div>`;
         const dims = `<div class="panel"><div class="ph">Weighted dimensions</div>${r.dims.map((d) => `<div class="dim"><div class="dim-h"><b>${d.k}</b><span class="sc">${d.v}</span></div><div class="dim-bar"><i style="width:${d.v}%"></i></div></div>`).join("")}</div>`;
         const evidence = `<div class="panel"><div class="ph">Per-moment evidence</div>${r.evidence.map((e) => `<div class="ev-row"><span class="tag">${e.tag}</span><div class="ex">${e.ex}</div></div>`).join("")}</div>`;
@@ -1297,13 +1299,34 @@
       function render() {
         const root = document.getElementById("root");
         root.innerHTML = (VIEWS[S.route] || viewHome)();
-        if (S.route === "workspace" && !S.toastShown) {
-          // an 'active'-tier pairing toast — the only thing louder is a standup
-          setTimeout(showPairingToast, 1400);
-        }
+        if (S.route === "workspace") {
+          if (!S.toastShown) setTimeout(showPairingToast, 1400); // active-tier pairing
+          startStandupCountdown(); // the standup arrives on its own (director nudge)
+        } else stopStandupCountdown();
         const m = document.querySelector(".main");
         if (m) m.scrollTo({ top: 0 });
       }
+      // Demo timing only: the real director decides when Sarah calls a standup
+      // (e.g. ticket.reviewed). Here a ~30s background countdown auto-arrives it
+      // so the incoming modal + prompt are visible without a button.
+      let sdTimer = null;
+      function startStandupCountdown() {
+        if (sdTimer || S.standupFired) return;
+        let n = 30;
+        const tick = () => {
+          const el = document.getElementById("sd-demo");
+          if (el) el.innerHTML = `${svg(icon.mic, 12, 2)} standup nudge in 0:${String(n).padStart(2, "0")}`;
+          if (n <= 0) {
+            stopStandupCountdown();
+            if (S.route === "workspace" && !S.standupFired && !document.getElementById("meet-layer")) openStandupIncoming();
+            return;
+          }
+          n--;
+        };
+        tick();
+        sdTimer = setInterval(tick, 1000);
+      }
+      function stopStandupCountdown() { if (sdTimer) { clearInterval(sdTimer); sdTimer = null; } }
       function nav(route, opts = {}) {
         if (opts.dock) S.dock = opts.dock;
         S.route = route;
@@ -1396,7 +1419,6 @@
         if (e.target.closest("#run-btn")) return runChecks();
         if (e.target.closest("#review-btn") && !e.target.closest("#review-btn").disabled) return requestReview();
         if (e.target.closest("#term-clear")) { S.termLines = []; updateTerminal(); return; }
-        if (e.target.closest("#standup-btn")) return openStandupIncoming();
         if (e.target.closest("[data-toast]")) { const t = document.getElementById("toasts"); if (t) t.innerHTML = ""; return; }
         const fp = e.target.closest(".file-pill,[data-file]");
         if (fp && S.route === "workspace") { /* already open */ return; }
@@ -1442,6 +1464,10 @@
 
       function openStandupIncoming() {
         if (document.getElementById("si-layer")) return;
+        S.standupFired = true;
+        stopStandupCountdown();
+        const sd = document.getElementById("sd-demo");
+        if (sd) sd.innerHTML = `${svg(icon.mic, 12, 2)} Sarah is calling…`;
         const C = 2 * Math.PI * 38;
         const layer = document.createElement("div");
         layer.className = "standup-incoming";
