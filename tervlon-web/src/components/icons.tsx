@@ -21,6 +21,14 @@ export const icon = {
   chevron: '<path d="m6 9 6 6 6-6"/>',
   trash: '<path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/>',
   close: '<path d="M6 6l12 12M18 6 6 18"/>',
+  shield: '<path d="M12 4 4 8v5c0 4 3.2 6.5 8 8 4.8-1.5 8-4 8-8V8z"/>',
+  wallet: '<rect x="3" y="6" width="18" height="13" rx="2.5"/><path d="M3 10h18M16 14h2"/>',
+  bell: '<path d="M18 9a6 6 0 1 0-12 0c0 6-2.5 7-2.5 7h17S18 15 18 9z"/><path d="M10.5 20a2 2 0 0 0 3 0"/>',
+  dev: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+  bldg: '<path d="M3 21V8l6-4 6 4v13M9 21v-5h3v5M15 11h3v6"/>',
+  cap: '<path d="M3 9l9-4 9 4-9 4-9-4z"/><path d="M7 11v4c0 1 2.2 2 5 2s5-1 5-2v-4"/>',
+  signout: '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>',
+  swap: '<path d="m8 9 4-4 4 4M8 15l4 4 4-4"/>',
 } as const;
 
 export function Icon({

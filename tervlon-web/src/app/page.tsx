@@ -22,12 +22,7 @@ export default function LandingPage() {
             <a href="#pricing">Pricing</a>
           </div>
           <div className="nav-right">
-            <a className="nav-ghost" href="#join">
-              Talk to the team
-              <svg className="ico" viewBox="0 0 24 24" strokeWidth={2}>
-                <path d="M7 17 17 7M9 7h8v8" />
-              </svg>
-            </a>
+            <Link className="nav-ghost" href="/auth">Sign in</Link>
             <a className="nav-cta" href="#join">
               Get notified
               <svg className="ico" viewBox="0 0 24 24" strokeWidth={2}>
@@ -536,7 +531,7 @@ export default function LandingPage() {
           <span className="fnote">A day on a good team, observed.</span>
           <div className="fright">
             <span>Coming 2026</span>
-            <Link href="/app/catalog">Preview the app →</Link>
+            <Link href="/auth">Preview the app →</Link>
           </div>
         </div>
       </footer>
