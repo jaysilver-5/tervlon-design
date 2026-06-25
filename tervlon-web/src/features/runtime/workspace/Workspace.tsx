@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Avatar } from "@/components/Avatar";
 import { Logo } from "@/components/Logo";
 import { Icon, icon } from "@/components/icons";
@@ -19,6 +20,7 @@ type Checks = "idle" | "running" | "passed";
 type Standup = "none" | "incoming" | "meeting";
 
 export function Workspace({ sessionId }: { sessionId: string }) {
+  const router = useRouter();
   const [dock, setDock] = useState<Dock>("board");
   const [term, setTerm] = useState<Term>("terminal");
   const [checks, setChecks] = useState<Checks>("idle");
@@ -79,6 +81,7 @@ export function Workspace({ sessionId }: { sessionId: string }) {
         <button
           className="btn btn-pri" disabled={!reportReady}
           title={reportReady ? "Generate your evidence-backed report" : "Unlocks when tickets pass review and you've completed a standup"}
+          onClick={() => reportReady && router.push("/app/scorecard")}
         >
           <Icon path={icon.file} size={15} sw={2} /> Generate report
         </button>

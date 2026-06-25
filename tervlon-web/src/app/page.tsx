@@ -33,97 +33,89 @@ export default function LandingPage() {
         </div>
       </nav>
 
-      {/* hero */}
+      {/* hero — centered organisation */}
       <header className="hero" id="top">
         <div className="wrap">
-          <div className="hero-copy reveal">
-            <span className="eyebrow">
-              <span className="d" />
-              Coming soon
-            </span>
+          <div className="hero-center reveal">
+            <span className="eyebrow"><span className="d" />Sprint simulation · Coming soon</span>
             <h1>
-              Not a coding test.
+              Coding interviews are broken.
               <br />
-              <span className="serif">A day on the team.</span>
+              <span className="serif">We replaced them with a sprint.</span>
             </h1>
             <p className="hero-sub">
-              Tervlon drops you into a software team that&apos;s already mid-sprint.
-              Real tickets, real code in a real sandbox, a standup with your engineering
-              lead — and an evidence-backed scorecard at the end.
+              Tervlon is a sprint simulation. Developers work a real ticket backlog with AI
+              teammates while we measure how they think, communicate, and build. The report
+              shows what an interview can&apos;t.
             </p>
-            <EmailCapture cta="Get early access" />
-            <div className="capture-note">
-              <svg className="ico" viewBox="0 0 24 24" strokeWidth={2}>
-                <path d="M20 6 9 17l-5-5" />
-              </svg>
-              Be first in. One note when we open — nothing else.
-            </div>
+            <EmailCapture cta="Get notified" />
+            <a className="hero-talk" href="#join">Or talk to the team →</a>
+            <p className="hero-audience">
+              <b>Developers</b> prove how they actually work. <b>Hiring teams</b> hire on real
+              signal. <b>Academies</b> graduate engineers ready for the job.
+            </p>
           </div>
+        </div>
 
-          <div className="hero-media reveal">
-            <div className="shot">
-              <div className="shot-bar">
-                <span className="dot" />
-                <span className="dot" />
-                <span className="dot" />
-                <span className="shot-url">tervlon.com/app/sprint</span>
+        {/* wide workspace mockup with the standup nudge */}
+        <div className="wrap hero-shot-wrap reveal">
+          <div className="shot shot-wide">
+            <div className="shot-bar">
+              <span className="dot" /><span className="dot" /><span className="dot" />
+              <span className="shot-url">app.tervlon.com/sprint/ecom-api</span>
+            </div>
+            <div className="shot-body">
+              <div className="wsm-top">
+                <div className="wsm-title">E-Commerce API Sprint<small>Backend · Mid · T-03 Auth guard · 8:12 elapsed</small></div>
+                <div className="wsm-pres">
+                  <span className="av" style={{ background: "var(--sarah)" }}>SC</span>
+                  <span className="av" style={{ background: "var(--marcus)" }}>MR</span>
+                  <span className="av" style={{ background: "var(--priya)" }}>PR</span>
+                  <span className="av" style={{ background: "var(--james)" }}>JM</span>
+                </div>
               </div>
-              <div className="shot-body">
-                <div className="wsm-top">
-                  <div className="wsm-title">
-                    E-Commerce API Sprint
-                    <small>Backend · Mid · T-03 Auth guard</small>
-                  </div>
-                  <div className="wsm-pres">
-                    <span className="av" style={{ background: "var(--sarah)" }}>SC</span>
-                    <span className="av" style={{ background: "var(--marcus)" }}>MR</span>
-                    <span className="av" style={{ background: "var(--priya)" }}>PR</span>
-                    <span className="av" style={{ background: "var(--james)" }}>JM</span>
-                  </div>
+              <div className="wsm-grid">
+                <div className="wsm-board">
+                  <div className="wsm-blab">In progress</div>
+                  <div className="wsm-tk on"><span className="id">T-03 · core-blocker</span><div className="t">JWT auth middleware</div></div>
+                  <div className="wsm-blab" style={{ marginTop: 13 }}>To do</div>
+                  <div className="wsm-tk"><span className="id">T-04</span><div className="t">Protect order routes</div></div>
+                  <div className="wsm-tk"><span className="id">T-05</span><div className="t">Soft-delete filtering</div></div>
                 </div>
-                <div className="wsm-grid">
-                  <div className="wsm-board">
-                    <div className="wsm-blab">In progress</div>
-                    <div className="wsm-tk on">
-                      <span className="id">T-03</span>
-                      <div className="t">Harden the auth guard</div>
+                <div className="wsm-code">
+                  <div><span className="ln">1</span><span className="k">export interface</span> <span className="ty">AuthRequest</span> <span className="k">extends</span> Request {"{"}</div>
+                  <div><span className="ln">2</span>{"  "}userId?: <span className="ty">string</span>;</div>
+                  <div><span className="ln">3</span>{"}"}</div>
+                  <div><span className="ln">4</span></div>
+                  <div><span className="ln">5</span><span className="cm">// reject expired tokens before the handler</span></div>
+                  <div><span className="ln">6</span><span className="k">export const</span> <span className="fn">authGuard</span> = (req, res, next) ={">"} {"{"}</div>
+                  <div><span className="ln">7</span>{"  "}<span className="k">const</span> token = req.headers.<span className="st">authorization</span>;</div>
+                  <div><span className="ln">8</span>{"  "}<span className="k">if</span> (!token) <span className="k">return</span> res.<span className="fn">status</span>(<span className="ty">401</span>);</div>
+                  <div><span className="ln">9</span>{"  "}<span className="k">const</span> claims = jwt.<span className="fn">verify</span>(token, <span className="st">SECRET</span>);</div>
+                </div>
+              </div>
+              <div className="shot-scrim" />
+              {/* the standup nudge — the reference look */}
+              <div className="nudge-over">
+                <div className="nudge">
+                  <div className="nudge-h">
+                    <span className="av" style={{ background: "var(--sarah)", width: 34, height: 34, fontSize: 12 }}>SC</span>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div className="nk">Standup</div>
+                      <div className="nh"><b>Sarah Chen</b> is pulling you into a sync</div>
                     </div>
-                    <div className="wsm-blab" style={{ marginTop: 13 }}>To do</div>
-                    <div className="wsm-tk"><span className="id">T-04</span><div className="t">Rate-limit checkout</div></div>
-                    <div className="wsm-tk"><span className="id">T-05</span><div className="t">Idempotent webhooks</div></div>
                   </div>
-                  <div className="wsm-code">
-                    <div><span className="ln">1</span><span className="k">export interface</span> <span className="ty">AuthRequest</span> <span className="k">extends</span> Request {"{"}</div>
-                    <div><span className="ln">2</span>{"  "}userId?: <span className="ty">string</span>;</div>
-                    <div><span className="ln">3</span>{"}"}</div>
-                    <div><span className="ln">4</span></div>
-                    <div><span className="ln">5</span><span className="cm">// reject expired tokens before the handler</span></div>
-                    <div><span className="ln">6</span><span className="k">export const</span> <span className="fn">authGuard</span> = (req, res, next) ={">"} {"{"}</div>
-                    <div><span className="ln">7</span>{"  "}<span className="k">const</span> token = req.headers.<span className="st">authorization</span>;</div>
-                    <div><span className="ln">8</span>{"  "}<span className="k">if</span> (!token) <span className="k">return</span> res.<span className="fn">status</span>(<span className="ty">401</span>);</div>
-                  </div>
-                </div>
-                {/* the standup nudge, the way it actually arrives */}
-                <div className="si-dim">
-                  <div className="si-card">
-                    <div className="si-kick">Standup starting</div>
-                    <div className="si-ring">
-                      <svg width="72" height="72">
-                        <circle cx="36" cy="36" r="32" fill="none" stroke="var(--sarah-line)" strokeWidth="3" />
-                        <circle cx="36" cy="36" r="32" fill="none" stroke="var(--sarah)" strokeWidth="3" strokeLinecap="round" strokeDasharray="201" strokeDashoffset="64" />
+                  <div className="nudge-q">“Quick check-in with the team before T-04.”</div>
+                  <div className="nudge-actions">
+                    <button className="nudge-join" type="button">Join now</button>
+                    <button className="nudge-delay" type="button">Need 30s</button>
+                    <div className="nudge-ring">
+                      <svg width="38" height="38">
+                        <circle cx="19" cy="19" r="16" fill="none" stroke="var(--warn-tint)" strokeWidth="3" />
+                        <circle cx="19" cy="19" r="16" fill="none" stroke="#eca31c" strokeWidth="3" strokeLinecap="round" strokeDasharray={100} strokeDashoffset={37} />
                       </svg>
-                      <span className="av">SC</span>
+                      <b>5</b>
                     </div>
-                    <h3>Sarah wants to sync</h3>
-                    <div className="si-host">Sarah Chen · Engineering Lead</div>
-                    <div className="si-ctx">
-                      On <b>T-03</b> — let&apos;s talk through the auth guard before you go further.
-                    </div>
-                    <div className="si-actions">
-                      <button className="si-join" type="button">Join standup</button>
-                      <button className="si-delay" type="button">Need 30s</button>
-                    </div>
-                    <div className="si-sub">A delay, not a dismissal.</div>
                   </div>
                 </div>
               </div>

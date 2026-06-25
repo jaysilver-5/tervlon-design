@@ -54,33 +54,30 @@ export function StandupLayer({
   }
 
   if (phase === "incoming") {
-    const C = 2 * Math.PI * 38;
+    const C = 2 * Math.PI * 16;
     return (
       <div className="standup-incoming">
-        <div className="si-card">
-          <div className="si-kick">Standup · the one interruption</div>
-          <div className="si-ring">
-            <svg width="84" height="84">
-              <circle cx="42" cy="42" r="38" fill="none" stroke="var(--sarah-line)" strokeWidth="3" />
-              <circle
-                cx="42" cy="42" r="38" fill="none" stroke="var(--sarah)" strokeWidth="3"
-                strokeLinecap="round" strokeDasharray={C}
-                strokeDashoffset={C * (1 - count / 8)}
-                style={{ transition: "stroke-dashoffset 1s linear" }}
-              />
-            </svg>
-            <div className="si-av"><Avatar who="sarah" size={62} /></div>
+        <div className="nudge">
+          <div className="nudge-h">
+            <Avatar who="sarah" size={34} />
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div className="nk">Standup · the one interruption</div>
+              <div className="nh"><b>Sarah Chen</b> is pulling you into a sync</div>
+            </div>
           </div>
-          <h3>Sarah wants to sync</h3>
-          <div className="si-host">Sarah Chen · Engineering Lead · {TICKET.id}</div>
-          <div className="si-ctx">
-            Quick comprehension check on the auth guard before you go further.
+          <div className="nudge-q">“Quick check-in with the team before {TICKET.id} — walk me through the auth guard.”</div>
+          <div className="nudge-actions">
+            <button className="nudge-join" onClick={onJoin}>Join now</button>
+            <button className="nudge-delay" onClick={onClose}>Need 30s</button>
+            <div className="nudge-ring">
+              <svg width="38" height="38">
+                <circle cx="19" cy="19" r="16" fill="none" stroke="var(--warn-tint)" strokeWidth="3" />
+                <circle cx="19" cy="19" r="16" fill="none" stroke="#eca31c" strokeWidth="3" strokeLinecap="round" strokeDasharray={C} strokeDashoffset={C * (1 - count / 8)} style={{ transition: "stroke-dashoffset 1s linear" }} />
+              </svg>
+              <b>{count}</b>
+            </div>
           </div>
-          <div className="si-actions">
-            <button className="btn btn-violet" onClick={onJoin}>Join standup</button>
-            <button className="btn btn-ghost" onClick={onClose}>Need 30s</button>
-          </div>
-          <div className="si-sub">A delay, not a dismissal · auto-joins in 0:0{count}</div>
+          <div className="nudge-sub">A delay, not a dismissal · auto-joins at 0</div>
         </div>
       </div>
     );

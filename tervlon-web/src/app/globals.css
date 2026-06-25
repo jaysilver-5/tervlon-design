@@ -1034,3 +1034,41 @@ footer .fright a:hover { color: var(--ink); }
 
       /* billing */
       .region-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 20px; }
+
+/* ── standup nudge (reference-style: host + quote + amber CTA + countdown ring) ── */
+.nudge { width: 372px; max-width: 100%; background: var(--panel); border: 1px solid var(--line-2); border-radius: 16px; box-shadow: var(--sh-pop), 0 0 50px rgba(106,95,214,.10); padding: 16px 16px 15px; }
+.nudge-h { display: flex; align-items: center; gap: 10px; }
+.nudge-h .nk { font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #c4860f; }
+.nudge-h .nh { font-size: 13.5px; font-weight: 560; letter-spacing: -0.01em; }
+.nudge-h .nh b { color: var(--sarah); font-weight: 600; }
+.nudge-q { font-family: var(--serif); font-style: italic; font-size: 15px; line-height: 1.4; color: var(--ink-2); margin: 11px 0 14px; }
+.nudge-actions { display: flex; align-items: center; gap: 10px; }
+.nudge-join { flex: 1; border: none; border-radius: 10px; padding: 11px 14px; font-size: 13.5px; font-weight: 620; letter-spacing: -0.01em; color: #2f2305; cursor: pointer; background: linear-gradient(180deg, #f7c14e, #eca31c); box-shadow: 0 6px 16px rgba(214,154,23,.32); transition: transform .14s, box-shadow .18s; }
+.nudge-join:hover { transform: translateY(-1px); box-shadow: 0 9px 22px rgba(214,154,23,.38); }
+.nudge-delay { font-size: 12.5px; font-weight: 500; color: var(--ink-2); background: none; border: none; cursor: pointer; white-space: nowrap; }
+.nudge-delay:hover { color: var(--ink); }
+.nudge-ring { width: 38px; height: 38px; position: relative; flex-shrink: 0; }
+.nudge-ring svg { position: absolute; inset: 0; transform: rotate(-90deg); }
+.nudge-ring b { position: absolute; inset: 0; display: grid; place-items: center; font-size: 13px; font-weight: 650; color: #c4860f; font-variant-numeric: tabular-nums; }
+.nudge-sub { font-size: 10px; color: var(--faint); margin-top: 10px; text-align: center; }
+
+/* ── landing hero: centered organisation (reference layout), wide mockup below ── */
+.hero { text-align: center; padding: 128px 0 64px; }
+.hero::before { left: 50%; right: auto; transform: translateX(-50%); top: -220px; width: 900px; height: 640px; background: radial-gradient(50% 50% at 50% 50%, var(--blue-tint), transparent 70%); }
+.hero .wrap { display: block; }
+.hero-center { max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; }
+.hero-center .eyebrow { justify-content: center; }
+.hero-center h1 { font-size: 60px; }
+.hero-center .hero-sub { margin: 24px auto 30px; }
+.hero-center .capture { margin: 0 auto; }
+.hero-talk { display: inline-block; margin-top: 16px; font-size: 14px; font-weight: 500; color: var(--blue-d); }
+.hero-talk:hover { color: var(--ink); }
+.hero-audience { margin: 34px auto 0; max-width: 64ch; font-size: 14.5px; line-height: 1.6; color: var(--muted); }
+.hero-audience b { color: var(--ink-2); font-weight: 560; }
+.hero-shot-wrap { margin-top: 60px; }
+.shot.shot-wide { max-width: 1060px; margin: 0 auto; }
+.shot-wide .wsm-grid { min-height: 392px; }
+/* the nudge sits over the mockup, lower-centre like the reference */
+.shot .nudge-over { position: absolute; left: 50%; bottom: 26px; transform: translateX(-50%); z-index: 3; }
+.shot .shot-scrim { position: absolute; inset: 0; background: linear-gradient(180deg, transparent 40%, rgba(12,18,30,.10)); pointer-events: none; }
+@media (max-width: 940px) { .hero-center h1 { font-size: 40px; } .shot .nudge-over { position: static; transform: none; margin: -10px 12px 14px; } }

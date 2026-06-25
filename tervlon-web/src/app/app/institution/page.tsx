@@ -2,10 +2,11 @@ import Link from "next/link";
 import { Icon, icon } from "@/components/icons";
 import { TRACK_COLOR } from "@/lib/people";
 import { INSTITUTION } from "@/mocks/company";
-import { StatusChip } from "@/features/company/ui";
+import { StatusChip, PersonSquare } from "@/features/company/ui";
 
 export default function InstitutionPage() {
   const I = INSTITUTION;
+  const needsNudge = I.learners.filter((l) => l.status === "Not started" || l.status === "In sprint");
   return (
     <section className="page fade">
       <div className="greet">
@@ -54,6 +55,31 @@ export default function InstitutionPage() {
               </div>
             ))}
           </div>
+        </div>
+      </div>
+      <div className="pnl" style={{ marginTop: 24 }}>
+        <div className="pnl-h">
+          <div className="t">Needs a nudge</div>
+          <div className="x">Who to reach out to — coaching signal, not a ranking</div>
+        </div>
+        <div style={{ padding: "8px 16px 14px" }}>
+          {needsNudge.length === 0 ? (
+            <div style={{ padding: "20px 4px", fontSize: 13, color: "var(--muted)" }}>Everyone&apos;s moving — no one stalled.</div>
+          ) : (
+            needsNudge.map((l) => (
+              <div className="need-row" key={l.name}>
+                <PersonSquare name={l.name} track={l.track} size={34} />
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontWeight: 540, fontSize: 13 }}>{l.name}</div>
+                  <div style={{ fontSize: 11.5, color: "var(--muted)" }}>
+                    {l.status === "Not started" ? "Hasn't started the sprint yet" : "Mid-sprint — check they're not stuck"}
+                  </div>
+                </div>
+                <StatusChip status={l.status} />
+                <button className="btn btn-ghost btn-sm"><Icon path={icon.chat} size={13} sw={2} /> Reach out</button>
+              </div>
+            ))
+          )}
         </div>
       </div>
       <div className="footer"><span>Cohort learning signals — never a learner leaderboard.</span><span>Institution · {I.name}</span></div>
