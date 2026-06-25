@@ -775,3 +775,36 @@ footer .fright a:hover { color: var(--ink); }
       .rail-out { display: grid; place-items: center; padding: 5px; border-radius: 7px; flex-shrink: 0; }
       .rail-out:hover { background: var(--well); }
       /* auth */
+
+/* ── landing: nav links, tracks, pricing teaser ── */
+.nav-links { display: flex; gap: 26px; margin-left: 34px; }
+.nav-links a { font-size: 14px; color: var(--ink-2); font-weight: 460; }
+.nav-links a:hover { color: var(--ink); }
+.nav-ghost { font-size: 14px; font-weight: 500; color: var(--ink-2); display: inline-flex; align-items: center; gap: 5px; }
+.nav-ghost:hover { color: var(--ink); }
+.track-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 44px; }
+.track-card { background: var(--panel); border: 1px solid var(--line-2); border-radius: 16px; padding: 24px; box-shadow: var(--sh-1); }
+.track-card .th { display: flex; align-items: center; gap: 9px; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-2); }
+.track-card .th .sq { width: 10px; height: 10px; border-radius: 3px; }
+.track-card h4 { font-size: 19px; font-weight: 600; letter-spacing: -0.02em; margin: 14px 0 8px; }
+.track-card p { font-size: 14px; color: var(--ink-2); line-height: 1.6; }
+.track-card .sprints { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 9px; }
+.track-card .sp { display: flex; align-items: center; gap: 9px; font-size: 13px; color: var(--ink-2); }
+.track-card .sp .lvl { margin-left: auto; font-size: 11px; color: var(--muted); }
+.price-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 44px; }
+.price-card { position: relative; background: var(--panel); border: 1px solid var(--line-2); border-radius: 16px; padding: 22px; box-shadow: var(--sh-1); }
+.price-card.pop { border-color: var(--blue); box-shadow: 0 0 0 1px var(--blue-line), var(--sh-2); }
+.price-card .pop-tag { position: absolute; top: -10px; left: 22px; font-size: 10px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: #fff; background: var(--grad); padding: 3px 10px; border-radius: 99px; }
+.price-card .pn { font-size: 15px; font-weight: 600; }
+.price-card .pb { font-size: 12.5px; color: var(--muted); margin-top: 2px; min-height: 32px; }
+.price-card .pp { margin: 12px 0 4px; display: flex; align-items: baseline; gap: 5px; }
+.price-card .pp b { font-size: 30px; font-weight: 650; letter-spacing: -0.03em; }
+.price-card .pp span { font-size: 12.5px; color: var(--muted); }
+.price-card .pc { font-size: 12px; font-weight: 540; color: var(--blue-d); }
+.price-note { text-align: center; font-size: 13.5px; color: var(--muted); margin-top: 26px; }
+@media (max-width: 940px) {
+  .nav-links { display: none; }
+  .track-grid { grid-template-columns: 1fr; }
+  .price-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 560px) { .price-grid { grid-template-columns: 1fr; } .nav-ghost { display: none; } }

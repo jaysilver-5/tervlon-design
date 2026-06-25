@@ -16,13 +16,20 @@ export default function LandingPage() {
             <Logo size={28} />
             <span className="brand-name">Tervlon</span>
           </a>
+          <div className="nav-links">
+            <a href="#how">How it works</a>
+            <a href="#tracks">Tracks</a>
+            <a href="#pricing">Pricing</a>
+          </div>
           <div className="nav-right">
-            <span className="soon">
-              <span className="d" />
-              Coming soon
-            </span>
+            <a className="nav-ghost" href="#join">
+              Talk to the team
+              <svg className="ico" viewBox="0 0 24 24" strokeWidth={2}>
+                <path d="M7 17 17 7M9 7h8v8" />
+              </svg>
+            </a>
             <a className="nav-cta" href="#join">
-              Get early access
+              Get notified
               <svg className="ico" viewBox="0 0 24 24" strokeWidth={2}>
                 <path d="M5 12h13M12 6l6 6-6 6" />
               </svg>
@@ -146,7 +153,7 @@ export default function LandingPage() {
       </section>
 
       {/* how it works */}
-      <section className="band tight">
+      <section className="band tight" id="how">
         <div className="wrap">
           <div className="reveal">
             <span className="sec-eyebrow">How it works</span>
@@ -348,6 +355,56 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* tracks */}
+      <section className="band tight" id="tracks">
+        <div className="wrap">
+          <div className="reveal">
+            <span className="sec-eyebrow">Tracks</span>
+            <h2 className="sec-h">
+              Pick the work that looks like <span className="serif">your job.</span>
+            </h2>
+            <p className="sec-lead">
+              Every track is a real codebase with hidden tests and teammates who speak in
+              role. Junior runs 3 tickets and one standup; Mid runs 5 and two.
+            </p>
+          </div>
+          <div className="track-grid reveal">
+            {[
+              {
+                name: "Backend", color: "var(--blue)",
+                desc: "Node / TypeScript services — auth, ledgers, webhooks, idempotency. Where most of the hidden-test rigour lives.",
+                sprints: [["E-Commerce API", "Mid"], ["Wallet Ledger", "Mid"], ["Campaign Analytics", "Junior"]],
+              },
+              {
+                name: "Frontend", color: "var(--sarah)",
+                desc: "React UIs over a live sandbox with a preview — forms, dashboards, the states people skip until they bite.",
+                sprints: [["Analytics Dashboard", "Mid"], ["Checkout Form", "Junior"]],
+              },
+              {
+                name: "Full-stack", color: "var(--marcus)",
+                desc: "End to end — an API, a typed client, and a rollout that can't take the app down. The whole loop.",
+                sprints: [["Feature Flags", "Mid"]],
+              },
+            ].map((t) => (
+              <div className="track-card" key={t.name}>
+                <div className="th"><span className="sq" style={{ background: t.color }} />{t.name}</div>
+                <h4>{t.name} sprints</h4>
+                <p>{t.desc}</p>
+                <div className="sprints">
+                  {t.sprints.map(([s, lvl]) => (
+                    <div className="sp" key={s}>
+                      <span className="sq" style={{ width: 6, height: 6, borderRadius: 2, background: t.color }} />
+                      {s}
+                      <span className="lvl">{lvl}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* who it's for */}
       <section className="band tight">
         <div className="wrap">
@@ -413,6 +470,41 @@ export default function LandingPage() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* pricing */}
+      <section className="band tight" id="pricing">
+        <div className="wrap">
+          <div className="reveal">
+            <span className="sec-eyebrow">Pricing</span>
+            <h2 className="sec-h">
+              Simple credits. <span className="serif">One per sprint.</span>
+            </h2>
+            <p className="sec-lead">
+              Runtime access is credit-based — a sprint and its scorecard cost one credit.
+              Pricing is region-aware and set for you, never a tier you pick.
+            </p>
+          </div>
+          <div className="price-grid reveal">
+            {[
+              { name: "Pay as you go", blurb: "One sprint + its scorecard", price: "$12", unit: "/ credit", credits: "1 credit" },
+              { name: "Starter", blurb: "5 sprints a month", price: "$29", unit: "/ mo", credits: "5 credits / mo" },
+              { name: "Pro", blurb: "15 sprints a month", price: "$59", unit: "/ mo", credits: "15 credits / mo", pop: true },
+              { name: "Unlimited", blurb: "Run as many as you like", price: "$99", unit: "/ mo", credits: "Unlimited" },
+            ].map((p) => (
+              <div className={`price-card${p.pop ? " pop" : ""}`} key={p.name}>
+                {p.pop && <div className="pop-tag">Most popular</div>}
+                <div className="pn">{p.name}</div>
+                <div className="pb">{p.blurb}</div>
+                <div className="pp"><b>{p.price}</b><span>{p.unit}</span></div>
+                <div className="pc">{p.credits}</div>
+              </div>
+            ))}
+          </div>
+          <p className="price-note">
+            Indicative — final prices land at launch. Get notified and you&apos;ll be first to know.
+          </p>
         </div>
       </section>
 
