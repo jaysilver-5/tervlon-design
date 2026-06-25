@@ -2,16 +2,23 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Logo } from "@/components/Logo";
+import { SvgDefs } from "@/components/SvgDefs";
 
 const NAV = [
-  { href: "/app/catalog", label: "Catalog", sec: "Develop" },
-  { href: "/sprint/ecommerce-api-sprint", label: "Workspace", sec: "Develop" },
+  { href: "/app", label: "Home" },
+  { href: "/app/catalog", label: "Catalog" },
+  { href: "/sprint/ecommerce-api-sprint", label: "Workspace" },
+  { href: "/app/profile", label: "Profile" },
+  { href: "/app/billing", label: "Billing" },
 ];
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const isActive = (href: string) =>
+    href === "/app" ? pathname === "/app" : pathname.startsWith(href);
   return (
     <div className="app">
+      <SvgDefs />
       <aside className="rail">
         <Link className="brand" href="/">
           <Logo size={26} />
@@ -19,11 +26,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </Link>
         <div className="nav-sec">Develop</div>
         {NAV.map((n) => (
-          <Link
-            key={n.href}
-            href={n.href}
-            className={`nav-item${pathname.startsWith(n.href) ? " on" : ""}`}
-          >
+          <Link key={n.href} href={n.href} className={`nav-item${isActive(n.href) ? " on" : ""}`}>
             {n.label}
           </Link>
         ))}
