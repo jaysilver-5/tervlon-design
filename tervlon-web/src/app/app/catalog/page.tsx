@@ -41,7 +41,7 @@ export default function CatalogPage() {
       ) : (
         <div className="grid">
           {list.map((s) => (
-            <Link key={s.slug} href="/app/runtime/demo" className="sprint">
+            <Link key={s.slug} href={`/sprint/${s.slug}`} className="sprint">
               <div className="sprint-head">
                 <span className="track">
                   <span className="sq" style={{ background: TRACK_COLOR[s.track] }} />

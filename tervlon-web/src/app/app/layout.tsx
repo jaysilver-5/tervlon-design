@@ -5,7 +5,7 @@ import { Logo } from "@/components/Logo";
 
 const NAV = [
   { href: "/app/catalog", label: "Catalog", sec: "Develop" },
-  { href: "/app/runtime/demo", label: "Workspace", sec: "Develop" },
+  { href: "/sprint/ecommerce-api-sprint", label: "Workspace", sec: "Develop" },
 ];
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
